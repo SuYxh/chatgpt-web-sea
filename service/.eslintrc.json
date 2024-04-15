@@ -1,0 +1,10 @@
+{
+  "root": true,
+  "ignorePatterns": ["build"],
+  "extends": ["@antfu"],
+  "rules": {
+    "curly": "off",
+    "no-console": "off",
+    "@typescript-eslint/ban-ts-comment": "off"
+  }
+}
