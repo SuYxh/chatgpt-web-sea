@@ -1,5 +1,10 @@
 import * as dotenv from 'dotenv'
+import fetch from 'node-fetch'
+
 dotenv.config()
+
+const modelApi = process.env.MODEL_API
+const modelConfig = process.env.MODEL_CONFIG
 
 const defaultChatAPI = '/v1/chat/completions'
 
@@ -55,7 +60,40 @@ export const defaultModelList = [
   },
 ]
 
-export const getModelList = () => {
-  const list = defaultModelList.map(v => ({ label: v.label, value: v.value }))
+export const getModelList = async () => {
+  let list: any[] = []
+  if (modelApi) {
+    try {
+      const response = await fetch(modelApi)
+      if (!response.ok) {
+        console.log(`Network response was not ok ${response.statusText}`)
+      }
+      const data = await response.json()
+      list = data as any[]
+    }
+    catch (error) {
+      console.error('There was a problem fetching the data:', error)
+      list = defaultModelList
+    }
+  }
+  else if (modelConfig) {
+    try {
+      list = JSON.parse(modelConfig)
+    }
+    catch (error) {
+      console.log('MODEL_CONFIG 解析失败')
+      list = defaultModelList
+    }
+  }
+  else {
+    list = defaultModelList
+  }
+
+  return list
+}
+
+export const getModelListForWeb = async () => {
+  const allModel = await getModelList()
+  const list = allModel.map(v => ({ label: v.label, value: v.value }))
   return list
 }

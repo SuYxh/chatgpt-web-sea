@@ -5,7 +5,7 @@ import * as dotenv from 'dotenv'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
 import { genQiniuyunToken } from './utils/qiniu'
-import { defaultModelList, getModelList } from './utils/model'
+import { getModelList, getModelListForWeb } from './utils/model'
 dotenv.config()
 
 const app = express()
@@ -22,60 +22,13 @@ app.all('*', (_, res, next) => {
   next()
 })
 
-router.post('/chat-process2', [limiter], async (req, res) => {
-  try {
-    res.setHeader('Content-type', 'text/event-stream')
-
-    const authHeader = req.headers.authorization || req.headers.Authorization
-
-    const curModel = defaultModelList.filter(model => model.value === req.body.model)?.[0] ?? ({} as any)
-
-    const url = `${curModel.baseUrl}${curModel.chatAPI}`
-    const result = await fetch(url,
-      {
-        headers: {
-          'Authorization': authHeader || curModel.apiKey,
-          'Content-Type': req.headers['content-type'] || 'application/json',
-        },
-        method: req.method || 'POST',
-        body: JSON.stringify(req.body),
-      },
-    )
-
-    if (result.status !== 200) {
-      return result.body
-    }
-
-    const stream = result.body
-
-    stream.on('data', () => {
-      stream.resume()
-    })
-
-    stream.on('end', () => {
-      res.end()
-    })
-
-    stream.on('error', (err) => {
-      console.error('Stream error:', err)
-      res.write(err.message)
-      res.end()
-    })
-
-    stream.pipe(res)
-  }
-  catch (err) {
-    console.error('Error:', err)
-    res.status(500).send('Internal Server Error')
-  }
-})
-
 router.post('/chat-process', [limiter], async (req, res) => {
   try {
     const authHeader = req.headers.authorization || req.headers.Authorization
     const contentType = req.headers['content-type']
+    const modelList = await getModelList()
 
-    const curModel = defaultModelList.filter(model => model.value === req.body.model)?.[0] ?? ({} as any)
+    const curModel = modelList.filter(model => model.value === req.body.model)?.[0] ?? ({} as any)
     const url = `${curModel.baseUrl}${curModel.chatAPI}`
     const payload = {
       headers: {
@@ -157,8 +110,8 @@ router.post('/getQiniuToken', async (req, res) => {
   res.json({ status: 'Success', message: '', data: token })
 })
 
-router.post('/getModelList', (req, res) => {
-  const list = getModelList()
+router.post('/getModelList', async (req, res) => {
+  const list = await getModelListForWeb()
   res.send({ status: 'Success', message: '', data: list })
 })
 
