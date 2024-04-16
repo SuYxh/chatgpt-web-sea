@@ -1,4 +1,4 @@
-# ChatGPT Web-LLM-Red-Team
+# ChatGPT Web Sea
 
 > 声明：此项目只发布于 GitHub，基于 MIT 协议，免费且作为开源学习使用。并且不会有任何形式的卖号、付费服务、讨论群、讨论组等行为。谨防受骗。本项目为开源项目，在[chatgpt-web]([Chanzhaoyu/chatgpt-web: 用 Express 和 Vue3 搭建的 ChatGPT 演示网页 (github.com)](https://github.com/Chanzhaoyu/chatgpt-web))的基础上进行二次开发，感谢原作者的无私奉献。 使用者必须在遵循**法律法规**的情况下使用，不得用于非法用途。
 
@@ -214,7 +214,7 @@ pnpm dev
 > 克隆项目本地执行
 
 ```bash
-docker build -t chatgpt-web-llm-red-team:1.0.0 .   
+docker build -t chatgpt-web-sea:1.0.0 .   
 
 # 前台运行
 docker run --rm -it -p 3002:3002 \
@@ -225,8 +225,8 @@ docker run --rm -it -p 3002:3002 \
   -e Qiniuyun_BUCKET_NAME=bucketName \
   -e Kimi_API_BASE_URL=http://kimi.example.cn \
   -e Kimi_API_KEY=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ1c2VyLWNlbnRlciIsImV4cCI6MTcyMDUzNzg4NSwiaWF0IjoxNzEyNzYxODg1LCJqdGzNyMDcwNjhiNGJjaDAiLCJhYnN0cmFjdF91c2VyX2lkIjoiY25zNTkybzNyMDcwNjhiNGJjZ2cifQ.HQFe_L_amsLJXS8CMri0cZkMkwRBldNfSLizq5JWiEGaSJ1njHBOw \
-  --name chatgpt-web \
-  chatgpt-web-llm-red-team:1.0.0
+  --name chatgpt-web-sea \
+  chatgpt-web-sea:1.0.0
 
 
 # 后台运行
@@ -238,8 +238,8 @@ docker run -d -p 3002:3002 \
   -e Qiniuyun_BUCKET_NAME=bucketName \
   -e Kimi_API_BASE_URL=http://kimi.example.cn \
   -e Kimi_API_KEY=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ1c2VyLWNlbnRlciIsImV4cCI6MTcyMDUzNzg4NSwiaWF0IjoxNzEyNzYxODg1LCJqdGzNyMDcwNjhiNGJjaDAiLCJhYnN0cmFjdF91c2VyX2lkIjoiY25zNTkybzNyMDcwNjhiNGJjZ2cifQ.HQFe_L_amsLJXS8CMri0cZkMkwRBldNfSLizq5JWiEGaSJ1njHBOw \
-  --name chatgpt-web \
-  chatgpt-web-llm-red-team:1.0.0
+  --name chatgpt-web-sea \
+  chatgpt-web-sea:1.0.0
 
 # 运行地址
 http://localhost:3002/
@@ -260,8 +260,8 @@ docker run -d -p 3002:3002 \
   -e Qiniuyun_BUCKET_NAME=bucketName \
   -e Kimi_API_BASE_URL=http://kimi.example.cn \
   -e Kimi_API_KEY=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ1c2VyLWNlbnRlciIsImV4cCI6MTcyMDUzNzg4NSwiaWF0IjoxNzEyNzYxODg1LCJqdGzNyMDcwNjhiNGJjaDAiLCJhYnN0cmFjdF91c2VyX2lkIjoiY25zNTkybzNyMDcwNjhiNGJjZ2cifQ.HQFe_L_amsLJXS8CMri0cZkMkwRBldNfSLizq5JWiEGaSJ1njHBOw \
-  --name chatgpt-web-llm-red-team \
-  jarvis0426/chatgpt-web-llm-red-team:latest
+  --name chatgpt-web-sea \
+  jarvis0426/chatgpt-web-sea:latest
 ```
 
 配置信息请你使用你自己的。
