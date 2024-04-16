@@ -1,6 +1,6 @@
 {
-  "name": "chatgpt-web-llm-red-team-service",
-  "version": "1.0.0",
+  "name": "chatgpt-web-sea-service",
+  "version": "1.0.1",
   "private": false,
   "description": "ChatGPT Web Service",
   "author": "ershiyi <y170088888@163.com>",

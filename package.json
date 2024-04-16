@@ -1,10 +1,11 @@
 {
-  "name": "chatgpt-web-llm-red-team",
-  "version": "1.0.0",
+  "name": "chatgpt-web-sea",
+  "version": "1.0.1",
   "private": false,
-  "description": "ChatGPT Web",
+  "description": "ChatGPT Web 聚合版",
   "author": "ershiyi <y170088888@163.com>",
   "keywords": [
+    "kimi-free-api",
     "chatgpt-web",
     "chatgpt",
     "chatbot",
