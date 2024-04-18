@@ -15,6 +15,7 @@ import { useParser } from './hooks/useParser'
 import Upload from './components/Upload/index.vue'
 import DisplayWall from './components/Upload/DisplayWall.vue'
 import ModelSelect from './components/Model/index.vue'
+import { useModel } from './hooks/useModel'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
@@ -39,12 +40,14 @@ const { scrollRef, scrollToBottom, scrollToBottomIfAtBottom } = useScroll()
 const { usingContext, toggleUsingContext } = useUsingContext()
 const { usingInternet, toggleUsingInternet, closeInternet } = useUsingInternet()
 const { parse } = useParser()
+const { getModelList } = useModel()
+getModelList()
 
 const { uuid } = route.params as { uuid: string }
 
 const dataSources = computed(() => chatStore.getChatByUuid(+uuid))
 const curModel = computed(() => chatStore.getModelByUuid(+uuid))
-const isGPT35 = computed(() => curModel.value.includes('gpt-3.5'))
+const isGPT35 = computed(() => curModel.value?.value?.includes('gpt-3.5'))
 const conversationList = computed(() => dataSources.value.filter(item => (!item.inversion && !!item.conversationOptions)))
 
 const prompt = ref<string>('')
@@ -201,7 +204,7 @@ async function onConversation() {
         // TODO: 需要根据不同的模型组合不同的参数
         body: JSON.stringify({
           // action: 'next',
-          model: curModel.value,
+          model: curModel.value.value,
           // parent_message_id: parentMessageId,
           // TODO: 还需要处理没有开启上下文的情况
           messages,

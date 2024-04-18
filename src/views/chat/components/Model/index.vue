@@ -3,7 +3,7 @@ import { defineComponent, onMounted, ref } from 'vue'
 import { NSelect, NSpace } from 'naive-ui'
 import { useRoute } from 'vue-router'
 import { useChatStore } from '@/store'
-import { fetchModelList } from '@/api'
+import { useModel } from '@/views/chat/hooks/useModel'
 
 export default defineComponent({
   components: {
@@ -14,63 +14,32 @@ export default defineComponent({
   setup(props, { emit }) {
     const chatStore = useChatStore()
     const route = useRoute()
+    const { getLocalModelData } = useModel()
 
     const { uuid } = route.params as { uuid: string }
 
     const selectedValue = ref('gpt-3.5-turbo')
     // TODO: 模型由接口获取
-    const options = ref([
-      {
-        label: 'gpt-3.5-turbo-0125',
-        value: 'gpt-3.5-turbo',
-      },
-      {
-        label: 'Kimi',
-        value: 'kimi',
-      },
-      {
-        label: '阶跃星辰',
-        value: 'step',
-      },
-      {
-        label: '通义千问',
-        value: 'qianwen',
-      },
-      {
-        label: '智谱清言',
-        value: 'glm',
-      },
-      {
-        label: '秘塔AI',
-        value: 'metaso',
-      },
-      {
-        label: '聆心智能',
-        value: 'Emohaa',
-      },
-    ])
+    const options = ref<Model.ModelList>([])
 
-    const handleChange = (val: any) => {
-      console.log('val', val)
-      chatStore.setModelByUuid(+uuid, val)
-      const item = options.value.filter(v => v.value === val)
+    const handleChange = (val: string) => {
+      console.log('下拉筛选的模型', val)
+      const item = options.value.filter((v: Model.Model) => v.value === val)?.[0] ?? {}
+      chatStore.setModelByUuid(+uuid, item)
       emit('update', item)
     }
 
-    const getModelList = async () => {
-      const result = await fetchModelList()
-      console.log('getModelList', result)
-      if (result.status === 'Success') {
-        options.value = result.data
-      }
+    const getModelList = () => {
+      const models = getLocalModelData()
+      options.value = models
     }
 
     const setDefaultModel = () => {
       handleChange(options.value[0].value)
     }
 
-    onMounted(async () => {
-      await getModelList()
+    onMounted(() => {
+      getModelList()
       setDefaultModel()
     })
 

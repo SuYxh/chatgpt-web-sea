@@ -25,15 +25,16 @@ export const useChatStore = defineStore('chat-store', {
     getModelByUuid(state: Chat.ChatState) {
       return (uuid?: number) => {
         if (uuid) {
-          return state.chat.find(item => item.uuid === uuid)?.model ?? ''
+          const models = state.chat.find(item => item.uuid === uuid)?.model ?? {}
+          return models as Model.Model
         }
-        return ''
+        return {} as Model.Model
       }
     },
   },
 
   actions: {
-    setModelByUuid(uuid: number, model: string) {
+    setModelByUuid(uuid: number, model: any) {
       if (!uuid || uuid === 0) {
         return
       }
@@ -41,11 +42,6 @@ export const useChatStore = defineStore('chat-store', {
       const curChat = this.chat.find(item => item.uuid === uuid) ?? ({} as any)
       curChat.model = model
       this.recordState()
-
-      // if (chatIndex !== -1) {
-      //   this.chat[chatIndex].data[index] = chat
-      //   this.recordState()
-      // }
     },
     setUsingContext(context: boolean) {
       this.usingContext = context
