@@ -21,9 +21,10 @@ export async function fetchWithAuth(input: RequestInfo, init?: RequestInit): Pro
   console.log('fetchInit', fetchInit)
   const url = /^https?:/i.test(input.toString()) ? input : `${baseUrl}${input}`
   const response = await fetch(url, fetchInit)
-  console.log('response', response)
+
   if (!response.ok) {
-    throw new Error(`HTTP error ${response.status}`)
+    const text = await response.text()
+    throw new Error(`Error: ${text}`)
   }
   return response
 }

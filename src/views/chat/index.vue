@@ -134,7 +134,6 @@ async function onConversation() {
   loading.value = true
   prompt.value = ''
   fileList.value = []
-  // TODO： 什么情况下没有? 先用 kimi 对话 然后清理掉，再用 gpt3 对话
   uploadRef.value?.clear()
 
   let options: Chat.ConversationRequest = {}
@@ -158,9 +157,6 @@ async function onConversation() {
   scrollToBottom()
   let allText = ''
   try {
-    console.log('conversationList', conversationList.value)
-    console.log('dataSources', dataSources.value)
-
     const messages: any[] = []
     dataSources.value.forEach((item) => {
       if (item.inversion) {
@@ -168,7 +164,7 @@ async function onConversation() {
       }
       else {
         const thinkingText = t('chat.thinking')
-        if (!item.text.startsWith(thinkingText)) {
+        if (!item.text.startsWith(thinkingText) && !item.error) {
           messages.push({ role: 'assistant', content: item.text })
         }
       }
@@ -216,18 +212,20 @@ async function onConversation() {
       messages.push(lastMsg)
     }
 
-    console.log('messages', messages)
+    if (!messages[messages.length - 1].content) {
+      console.log('onConversation 删除最后一条数据')
+      messages.pop()
+    }
+    // TODO: 还需要处理没有开启上下文的情况
+    console.log('请求的 Messages', messages)
 
     const fetchChatAPIOnce = async () => {
-      console.log('当前选择的模型 curModel', curModel.value)
+      console.log('当前选择的模型', curModel.value)
       const { url, headers } = handleModelParams()
 
       const body: any = {
         model: curModel.value.value,
-        // parent_message_id: parentMessageId,
-        // TODO: 还需要处理没有开启上下文的情况
         messages,
-        // use_search: usingInternet.value,
         stream: true,
       }
 
@@ -253,6 +251,29 @@ async function onConversation() {
         done = doneReadingStream
         if (value) {
           const chunk = decoder.decode(value, { stream: true })
+          try {
+            const jsonData = JSON.parse(chunk)
+            if (jsonData.status === 'Fail') {
+              console.log('API Error:', jsonData.message)
+              updateChat(
+                +uuid,
+                dataSources.value.length - 1,
+                {
+                  dateTime: new Date().toLocaleString(),
+                  text: jsonData.message,
+                  inversion: false,
+                  error: true,
+                  loading: false,
+                  conversationOptions: null,
+                  requestOptions: { prompt: message, options: { ...options } },
+                },
+              )
+              break // 中断处理过程
+            }
+          }
+          catch (e) {
+            console.log('JSON parsing error', e)
+          }
           parse({
             chunk,
             hooks: {
@@ -278,10 +299,10 @@ async function onConversation() {
                 }
               },
               onParsed() {
-                console.log('onParsed')
+                console.log('流解析结束')
               },
               onError(e) {
-                console.log('onError', e)
+                console.log('流解析出错', e)
               },
             },
           })
@@ -293,6 +314,7 @@ async function onConversation() {
     await fetchChatAPIOnce()
   }
   catch (error: any) {
+    console.log('请求模型出错', error)
     const errorMessage = error?.message ?? t('common.wrong')
 
     if (error.message === 'canceled') {
@@ -431,9 +453,15 @@ async function onRegenerate(index: number) {
       messages.push(lastMsg)
     }
 
-    console.log('messages', messages)
+    if (!messages[messages.length - 1].content) {
+      console.log('onRegenerate 删除最后一条数据')
+      messages.pop()
+    }
+    // TODO: 还需要处理没有开启上下文的情况
+    console.log('请求的 Messages', messages)
+
     const fetchChatAPIOnce = async () => {
-      console.log('当前选择的模型 curModel', curModel.value)
+      console.log('当前选择的模型', curModel.value)
       const { url, headers } = handleModelParams()
 
       const body: any = {
@@ -469,6 +497,29 @@ async function onRegenerate(index: number) {
         done = doneReadingStream
         if (value) {
           const chunk = decoder.decode(value, { stream: true })
+          try {
+            const jsonData = JSON.parse(chunk)
+            if (jsonData.status === 'Fail') {
+              console.log('API Error:', jsonData.message)
+              updateChat(
+                +uuid,
+                index,
+                {
+                  dateTime: new Date().toLocaleString(),
+                  text: jsonData.message,
+                  inversion: false,
+                  error: true,
+                  loading: false,
+                  conversationOptions: null,
+                  requestOptions: { prompt: message, options: { ...options } },
+                },
+              )
+              break // 中断处理过程
+            }
+          }
+          catch (e) {
+            console.log('JSON parsing error', e)
+          }
           parse({
             chunk,
             hooks: {
@@ -494,10 +545,10 @@ async function onRegenerate(index: number) {
                 }
               },
               onParsed() {
-                console.log('onParsed')
+                console.log('流解释结束')
               },
               onError(e) {
-                console.log('onError', e)
+                console.log('流解释出错', e)
               },
             },
           })
@@ -662,7 +713,7 @@ const renderOption = (option: { label: string }) => {
 }
 
 const uploadComplete = (files: any[]) => {
-  console.log('fileList', files)
+  console.log('文件上传完成', files)
   fileList.value = files
 
   // 文件上传后关闭网络，确保准确性

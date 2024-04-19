@@ -6,6 +6,7 @@ import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
 import { genQiniuyunToken } from './utils/qiniu'
 import { getModelList, getModelListForWeb } from './utils/model'
+import { logger } from './utils/logger'
 dotenv.config()
 
 const app = express()
@@ -17,7 +18,7 @@ app.use(express.json())
 
 app.all('*', (_, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Headers', 'authorization, Content-Type')
+  res.header('Access-Control-Allow-Headers', 'Authorization, authorization, Content-Type')
   res.header('Access-Control-Allow-Methods', '*')
   next()
 })
@@ -43,7 +44,11 @@ const handleAuthorization = (authHeader, curModel) => {
 
 router.post('/chat-process', [limiter], async (req, res) => {
   try {
+    logger.info('req.headers', req.headers)
+    logger.info('req.body', req.body)
+
     const keyStrategy = process.env.KEY_STRATEGY
+    logger.info('KEY_STRATEGY', keyStrategy)
     const authHeader = req.headers.authorization || req.headers.Authorization
 
     if (+keyStrategy === 1 && !authHeader) {
@@ -55,6 +60,7 @@ router.post('/chat-process', [limiter], async (req, res) => {
     const modelList = await getModelList()
 
     const curModel = modelList.filter(model => model.value === req.body.model)?.[0] ?? ({} as any)
+    logger.info('当前选用的模型', curModel)
 
     const authorization = handleAuthorization(authHeader, curModel)
     const url = `${curModel.baseUrl}${curModel.chatAPI}`
@@ -73,12 +79,13 @@ router.post('/chat-process', [limiter], async (req, res) => {
     //   设置代理
     //   payload.agent = new HttpsProxyAgent(process.env.HTTPS_PROXY)
     // }
-    console.log('url', url)
-    console.log('payload', payload)
+    logger.info('准备向模型发起请求-地址', url)
+    logger.info('准备向模型发起请求-参数', payload)
 
     const result = await fetch(url, payload)
 
     if (result.status !== 200) {
+      logger.error('向模型发起请求-失败-result', result)
       const errorMessage = await result.text()
       return res.send({ status: 'Fail', message: errorMessage, data: null })
     }
@@ -93,7 +100,7 @@ router.post('/chat-process', [limiter], async (req, res) => {
         res.end()
       })
       stream.on('error', (err) => {
-        console.error('Stream error:', err)
+        logger.error('stream-error', err)
         res.send({ status: 'Fail', message: err.message, data: null })
       })
       stream.pipe(res)
@@ -104,7 +111,7 @@ router.post('/chat-process', [limiter], async (req, res) => {
     }
   }
   catch (err) {
-    console.error('Error:', err)
+    logger.error('chatProcess Error', err)
     res.status(500).send({ status: 'Fail', message: 'Internal Server Error', data: null })
   }
 })
