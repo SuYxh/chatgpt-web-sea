@@ -42,9 +42,3 @@ export function fetchWebSite<T = any>() {
     url: '/getWebSite',
   })
 }
-
-export function fetchQiniuyunToken<T = any>() {
-  return post<T>({
-    url: '/getQiniuToken',
-  })
-}

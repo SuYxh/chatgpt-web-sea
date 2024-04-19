@@ -1,13 +1,17 @@
 import express from 'express'
 import cors from 'cors'
 import * as dotenv from 'dotenv'
+import multer from 'multer'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
-import { chatService, genQiniuyunToken, getModelListForWeb } from './service'
+import { chatService, getModelListForWeb, qiniuService } from './service'
 dotenv.config()
 
 const app = express()
 const router = express.Router()
+
+// 设置 Multer，将文件存储在服务器的临时目录
+const upload = multer({ dest: 'uploads/' })
 
 app.use(cors())
 app.use(express.static('public'))
@@ -51,11 +55,6 @@ router.post('/verify', async (req, res) => {
   }
 })
 
-router.post('/getQiniuToken', async (req, res) => {
-  const token = await genQiniuyunToken()
-  res.json({ status: 'Success', message: '', data: token })
-})
-
 router.post('/getModelList', async (req, res) => {
   const list = await getModelListForWeb()
   res.send({ status: 'Success', message: '', data: list })
@@ -72,6 +71,11 @@ router.post('/getWebSite', async (req, res) => {
     const defaultWebSite = { avatar: 'https://qn.huat.xyz/mac/202404152305055.jpeg', nickName: '二十一', contact: '', shop: '' }
     res.send({ status: 'Success', message: '您配置 WEB_SITE 解析失败,使用默认的信息', data: defaultWebSite })
   }
+})
+
+// 上传文件的路由
+router.post('/upload', upload.single('file'), (req, res) => {
+  return qiniuService(req, res)
 })
 
 app.use('', router)

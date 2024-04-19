@@ -676,16 +676,16 @@ const renderOption = (option: { label: string }) => {
   return []
 }
 
-const uploadComplete = (files: any[]) => {
+const uploadComplete = (files: any) => {
   console.log('文件上传完成', files)
-  fileList.value = files
+  fileList.value.push(files)
 
   // 文件上传后关闭网络，确保准确性
   closeInternet()
 }
 
-const uploadError = () => {
-  ms.error('文件上传失败,请重试')
+const uploadError = (msg: string) => {
+  ms.error(msg)
 }
 
 const fileRemoved = (file: any) => {

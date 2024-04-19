@@ -1,5 +1,15 @@
 import type { FetchFn } from 'chatgpt'
 
+export interface ResponseType<T> {
+  status: 'Success' | 'Fail'
+  message: string
+  data: T
+}
+
+export interface CloudStorageService {
+  uploadFile(req: any): Promise<any>
+}
+
 export interface RequestProps {
   prompt: string
   options?: ChatContext
