@@ -40,14 +40,14 @@ const { scrollRef, scrollToBottom, scrollToBottomIfAtBottom } = useScroll()
 const { usingContext, toggleUsingContext } = useUsingContext()
 const { usingInternet, toggleUsingInternet, closeInternet } = useUsingInternet()
 const { parse } = useParser()
-const { getModelList } = useModel()
+const { getModelList, getModelConfigByName, getOneAPI } = useModel()
 getModelList()
 
 const { uuid } = route.params as { uuid: string }
 
 const dataSources = computed(() => chatStore.getChatByUuid(+uuid))
 const curModel = computed(() => chatStore.getModelByUuid(+uuid))
-const isGPT35 = computed(() => curModel.value?.value?.includes('gpt-3.5'))
+const isGPT = computed(() => curModel.value?.value?.includes('gpt'))
 const conversationList = computed(() => dataSources.value.filter(item => (!item.inversion && !!item.conversationOptions)))
 
 const prompt = ref<string>('')
@@ -75,6 +75,32 @@ function handleSubmit() {
 // TODO: 待抽离
 function isImage(type: string) {
   return type.startsWith('image/')
+}
+
+function handleModelParams() {
+  let url = '/chat-process'
+  const headers: any = {
+    'Content-Type': 'application/json',
+  }
+
+  const oneAPIConfig = getOneAPI()
+  console.log('oneAPIConfig', oneAPIConfig)
+  if (oneAPIConfig.baseUrl && oneAPIConfig.chatAPI && oneAPIConfig.apiKey) {
+    url = oneAPIConfig.baseUrl + oneAPIConfig.chatAPI
+    headers.Authorization = `Bearer ${oneAPIConfig.apiKey}`
+  }
+  else {
+    const curModelConfig = getModelConfigByName(curModel.value.value)
+    console.log('curModelConfig', curModelConfig)
+    if (curModelConfig.baseUrl && curModelConfig.chatAPI) {
+      url = curModelConfig.baseUrl + curModelConfig.chatAPI
+    }
+
+    if (curModelConfig.apiKey) {
+      headers.Authorization = `Bearer ${curModel.value.apiKey}`
+    }
+  }
+  return { url, headers }
 }
 
 async function onConversation() {
@@ -190,27 +216,26 @@ async function onConversation() {
     console.log('messages', messages)
 
     const fetchChatAPIOnce = async () => {
-      const url = '/chat-process'
-
       console.log('当前选择的模型 curModel', curModel.value)
-      // fetchWithAuth
+      const { url, headers } = handleModelParams()
+
+      const body: any = {
+        model: curModel.value.value,
+        // parent_message_id: parentMessageId,
+        // TODO: 还需要处理没有开启上下文的情况
+        messages,
+        // use_search: usingInternet.value,
+        stream: true,
+      }
+
+      if (!isGPT.value) {
+        body.use_search = usingInternet.value
+      }
+
       const response = await fetchWithAuth(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          // TODO：需要存储起来，不在这里写死，新增一个配置项
-          // 'Authorization': 'Bearer ssssss',
-        },
+        headers,
         method: 'POST',
-        // TODO: 需要根据不同的模型组合不同的参数
-        body: JSON.stringify({
-          // action: 'next',
-          model: curModel.value.value,
-          // parent_message_id: parentMessageId,
-          // TODO: 还需要处理没有开启上下文的情况
-          messages,
-          use_search: usingInternet.value,
-          stream: true,
-        }),
+        body: JSON.stringify(body),
         signal: controller.signal,
       })
       const data = response.body
@@ -405,27 +430,28 @@ async function onRegenerate(index: number) {
 
     console.log('messages', messages)
     const fetchChatAPIOnce = async () => {
-      const url = '/chat-process'
-
       console.log('当前选择的模型 curModel', curModel.value)
+      const { url, headers } = handleModelParams()
+
+      const body: any = {
+        model: curModel.value.value,
+        // parent_message_id: parentMessageId,
+        // TODO: 还需要处理没有开启上下文的情况
+        messages,
+        // use_search: usingInternet.value,
+        stream: true,
+      }
+
+      if (!isGPT.value) {
+        body.use_search = usingInternet.value
+      }
+
       // fetchWithAuth
       const response = await fetchWithAuth(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          // TODO：需要存储起来，不在这里写死，新增一个配置项
-          // 'Authorization': 'Bearer ssssss',
-        },
+        headers,
         method: 'POST',
         // TODO: 需要根据不同的模型组合不同的参数
-        body: JSON.stringify({
-          // action: 'next',
-          model: curModel.value,
-          // parent_message_id: parentMessageId,
-          // TODO: 还需要处理没有开启上下文的情况
-          messages,
-          use_search: usingInternet.value,
-          stream: true,
-        }),
+        body: JSON.stringify(body),
         signal: controller.signal,
       })
       const data = response.body
@@ -734,7 +760,7 @@ onUnmounted(() => {
       <div class="w-full max-w-screen-xl m-auto">
         <!-- <div>nihaoya</div> -->
         <div class="flex items-center justify-between space-x-2">
-          <HoverButton v-if="!isMobile && !isGPT35">
+          <HoverButton v-if="!isMobile && !isGPT">
             <Upload ref="uploadRef" @upload-complete="uploadComplete" @upload-error="uploadError" />
           </HoverButton>
 
@@ -763,7 +789,7 @@ onUnmounted(() => {
                   <SvgIcon icon="ri:download-2-line" />
                 </span>
               </HoverButton>
-              <HoverButton v-if="!isGPT35" @click="toggleUsingInternet">
+              <HoverButton v-if="!isGPT" @click="toggleUsingInternet">
                 <span class="text-xl" :class="{ 'text-[#4b9e5f]': usingInternet, 'text-[#a8071a]': !usingInternet }">
                   <SvgIcon icon="iconoir:internet" />
                 </span>

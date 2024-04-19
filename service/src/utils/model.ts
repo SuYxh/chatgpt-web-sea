@@ -94,6 +94,6 @@ export const getModelList = async () => {
 
 export const getModelListForWeb = async () => {
   const allModel = await getModelList()
-  const list = allModel.map(v => ({ label: v.label, value: v.value }))
+  const list = allModel.map(v => ({ label: v.label, value: v.value, baseUrl: '', apiKey: '', chatAPI: defaultChatAPI }))
   return list
 }

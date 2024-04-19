@@ -77,7 +77,7 @@ export default {
     balance: 'API Credit 餘額',
     monthlyUsage: '本月使用量',
     openSource: '此專案在此開源：',
-    freeMIT: '免費且基於 MIT 授權，沒有任何形式的付費行為！',
+    freeMIT: '免費且基於 MIT 授權',
     stars: '如果你覺得此專案對你有幫助，請在 GitHub 上給我一顆星，或者贊助我，謝謝！',
   },
   store: {

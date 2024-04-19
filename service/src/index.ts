@@ -22,18 +22,47 @@ app.all('*', (_, res, next) => {
   next()
 })
 
+const handleBearer = (key: string) => {
+  if (!key.includes('Bearer')) {
+    return `Bearer ${key}`
+  }
+  return key
+}
+
+const handleAuthorization = (authHeader, curModel) => {
+  const keyStrategy = process.env.KEY_STRATEGY
+
+  // 只使用后端配置的 key
+  if (+keyStrategy === 2) {
+    return handleBearer(curModel.apiKey)
+  }
+
+  // 优先使用前端的 key，前端没有在使用后端的 key
+  return handleBearer(authHeader || curModel.apiKey)
+}
+
 router.post('/chat-process', [limiter], async (req, res) => {
   try {
+    const keyStrategy = process.env.KEY_STRATEGY
     const authHeader = req.headers.authorization || req.headers.Authorization
+
+    if (+keyStrategy === 1 && !authHeader) {
+      res.status(500).send({ status: 'Fail', message: `请配置${req.body.model}的认证信息`, data: null })
+      return
+    }
+
     const contentType = req.headers['content-type']
     const modelList = await getModelList()
 
     const curModel = modelList.filter(model => model.value === req.body.model)?.[0] ?? ({} as any)
+
+    const authorization = handleAuthorization(authHeader, curModel)
     const url = `${curModel.baseUrl}${curModel.chatAPI}`
     const payload = {
       headers: {
-        'Authorization': authHeader || curModel.apiKey,
+        'Authorization': authorization,
         'Content-Type': contentType || 'application/json',
+        // 'zz': 'zz',
       },
       method: req.method || 'POST',
       body: JSON.stringify(req.body),
@@ -44,6 +73,8 @@ router.post('/chat-process', [limiter], async (req, res) => {
     //   设置代理
     //   payload.agent = new HttpsProxyAgent(process.env.HTTPS_PROXY)
     // }
+    console.log('url', url)
+    console.log('payload', payload)
 
     const result = await fetch(url, payload)
 
