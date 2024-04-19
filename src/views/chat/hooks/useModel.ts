@@ -9,14 +9,16 @@ export function useModel() {
     ss.set(ONE_API_INFO, state)
   }
 
-  function getOneAPI() {
+  function getOneAPI(): Model.Model {
     const defaultConfig = {
+      label: 'one-api',
+      value: 'one-api',
       baseUrl: '',
       apiKey: '',
       chatAPI: '/v1/chat/completions',
     }
     const localState = ss.get(ONE_API_INFO) ?? defaultConfig
-    return localState
+    return { ...defaultConfig, ...localState }
   }
 
   function setLocalModelData(state: Model.ModelList) {

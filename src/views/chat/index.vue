@@ -22,6 +22,8 @@ import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
 import { t } from '@/locales'
 import { fetchWithAuth } from '@/utils/request/fetch'
+import { isImage } from '@/utils/is/index'
+import { findLast } from '@/utils/functions/index'
 
 let controller = new AbortController()
 let parentMessageId = ''
@@ -75,35 +77,112 @@ function handleSubmit() {
   onConversation()
 }
 
-// TODO: 待抽离
-function isImage(type: string) {
-  return type.startsWith('image/')
-}
-
-function handleModelParams() {
-  let url = '/chat-process'
+function _buildUrlAndHeaders(defaultUrl: string, apiConfig: Model.Model, apiKeyPath = 'apiKey'): { url: string; headers: any } {
   const headers: any = {
     'Content-Type': 'application/json',
   }
+  let url = defaultUrl
+
+  if (apiConfig.baseUrl && apiConfig.chatAPI) {
+    url = apiConfig.baseUrl + apiConfig.chatAPI
+  }
+
+  const apiKey = apiConfig[apiKeyPath] ?? ''
+  headers.Authorization = `Bearer ${apiKey}`
+
+  return { url, headers }
+}
+
+function buildUrlAndHeaders() {
+  const url = '/chat-process'
 
   const oneAPIConfig = getOneAPI()
   console.log('oneAPIConfig', oneAPIConfig)
+
   if (oneAPIConfig.baseUrl && oneAPIConfig.chatAPI && oneAPIConfig.apiKey) {
-    url = oneAPIConfig.baseUrl + oneAPIConfig.chatAPI
-    headers.Authorization = `Bearer ${oneAPIConfig.apiKey}`
+    return _buildUrlAndHeaders(url, oneAPIConfig)
   }
   else {
     const curModelConfig = getModelConfigByName(curModel.value.value)
     console.log('curModelConfig', curModelConfig)
-    if (curModelConfig.baseUrl && curModelConfig.chatAPI) {
-      url = curModelConfig.baseUrl + curModelConfig.chatAPI
+    return _buildUrlAndHeaders(url, curModelConfig, 'apiKey')
+  }
+}
+
+function handleChatFile(files: any[]) {
+  const imageContent: any[] = []
+  const otherfileContent: any[] = []
+
+  const imageList = files.filter(file => isImage(file.type))
+  const otherfiles = files.filter(file => !isImage(file.type))
+  if (imageList.length) {
+    imageList.forEach((img) => {
+      imageContent.push({
+        type: 'image_url',
+        image_url: {
+          url: img.url,
+        },
+      })
+    })
+  }
+  if (otherfiles.length) {
+    otherfiles.forEach((img) => {
+      otherfileContent.push({
+        type: 'file',
+        file_url: {
+          url: img.url,
+        },
+      })
+    })
+  }
+  return { imageContent, otherfileContent }
+}
+
+function handleMessages(files: any[]) {
+  const messages: { role: string; content: string | any[] }[] = []
+
+  if (usingContext.value) {
+    dataSources.value.forEach((item) => {
+      if (item.inversion) {
+        messages.push({ role: 'user', content: item.text })
+      }
+      else {
+        const thinkingText = t('chat.thinking')
+        if (!item.text.startsWith(thinkingText) && !item.error) {
+          messages.push({ role: 'assistant', content: item.text })
+        }
+      }
+    })
+  }
+  else {
+    const lastItem = findLast<Chat.Chat>(dataSources.value, v => v.inversion!) as Chat.Chat
+    messages.push({ role: 'user', content: lastItem.text })
+  }
+
+  if (files.length) {
+    const { imageContent, otherfileContent } = handleChatFile(files)
+    const _lastMsg = messages.pop()
+    const lastMsg = {
+      role: 'user',
+      content: [
+        ...imageContent,
+        ...otherfileContent,
+        {
+          type: 'text',
+          text: _lastMsg?.content,
+        },
+      ],
     }
 
-    if (curModelConfig.apiKey) {
-      headers.Authorization = `Bearer ${curModel.value.apiKey}`
-    }
+    messages.push(lastMsg)
   }
-  return { url, headers }
+
+  if (!messages[messages.length - 1].content) {
+    console.log('删除最后一条数据')
+    messages.pop()
+  }
+
+  return messages
 }
 
 async function onConversation() {
@@ -157,71 +236,13 @@ async function onConversation() {
   scrollToBottom()
   let allText = ''
   try {
-    const messages: any[] = []
-    dataSources.value.forEach((item) => {
-      if (item.inversion) {
-        messages.push({ role: 'user', content: item.text })
-      }
-      else {
-        const thinkingText = t('chat.thinking')
-        if (!item.text.startsWith(thinkingText) && !item.error) {
-          messages.push({ role: 'assistant', content: item.text })
-        }
-      }
-    })
+    const messages = handleMessages(files)
 
-    if (files.length) {
-      const imageContent: any[] = []
-      const otherfileContent: any[] = []
-
-      const imageList = files.filter(file => isImage(file.type))
-      const otherfiles = files.filter(file => !isImage(file.type))
-      if (imageList.length) {
-        imageList.forEach((img) => {
-          imageContent.push({
-            type: 'image_url',
-            image_url: {
-              url: img.url,
-            },
-          })
-        })
-      }
-      if (otherfiles.length) {
-        otherfiles.forEach((img) => {
-          otherfileContent.push({
-            type: 'file',
-            file_url: {
-              url: img.url,
-            },
-          })
-        })
-      }
-      const _lastMsg = messages.pop()
-      const lastMsg = {
-        role: 'user',
-        content: [
-          ...imageContent,
-          ...otherfileContent,
-          {
-            type: 'text',
-            text: _lastMsg.content,
-          },
-        ],
-      }
-
-      messages.push(lastMsg)
-    }
-
-    if (!messages[messages.length - 1].content) {
-      console.log('onConversation 删除最后一条数据')
-      messages.pop()
-    }
-    // TODO: 还需要处理没有开启上下文的情况
     console.log('请求的 Messages', messages)
 
     const fetchChatAPIOnce = async () => {
       console.log('当前选择的模型', curModel.value)
-      const { url, headers } = handleModelParams()
+      const { url, headers } = buildUrlAndHeaders()
 
       const body: any = {
         model: curModel.value.value,
@@ -272,7 +293,7 @@ async function onConversation() {
             }
           }
           catch (e) {
-            console.log('JSON parsing error', e)
+            // console.log('JSON parsing error', e)
           }
           parse({
             chunk,
@@ -398,71 +419,14 @@ async function onRegenerate(index: number) {
 
   let allText = ''
   try {
-    const messages: any[] = []
-    dataSources.value.forEach((item) => {
-      if (item.inversion) {
-        messages.push({ role: 'user', content: item.text })
-      }
-      else {
-        const thinkingText = t('chat.thinking')
-        if (!item.text.startsWith(thinkingText)) {
-          messages.push({ role: 'assistant', content: item.text })
-        }
-      }
-    })
+    const messages = handleMessages(files as any[])
 
-    if (files && files.length) {
-      const imageContent: any[] = []
-      const otherfileContent: any[] = []
-
-      const imageList = files.filter(file => isImage(file.type))
-      const otherfiles = files.filter(file => !isImage(file.type))
-      if (imageList.length) {
-        imageList.forEach((img) => {
-          imageContent.push({
-            type: 'image_url',
-            image_url: {
-              url: img.url,
-            },
-          })
-        })
-      }
-      if (otherfiles.length) {
-        otherfiles.forEach((img) => {
-          otherfileContent.push({
-            type: 'file',
-            file_url: {
-              url: img.url,
-            },
-          })
-        })
-      }
-      const _lastMsg = messages.pop()
-      const lastMsg = {
-        role: 'user',
-        content: [
-          ...imageContent,
-          ...otherfileContent,
-          {
-            type: 'text',
-            text: _lastMsg.content,
-          },
-        ],
-      }
-
-      messages.push(lastMsg)
-    }
-
-    if (!messages[messages.length - 1].content) {
-      console.log('onRegenerate 删除最后一条数据')
-      messages.pop()
-    }
     // TODO: 还需要处理没有开启上下文的情况
     console.log('请求的 Messages', messages)
 
     const fetchChatAPIOnce = async () => {
       console.log('当前选择的模型', curModel.value)
-      const { url, headers } = handleModelParams()
+      const { url, headers } = buildUrlAndHeaders()
 
       const body: any = {
         model: curModel.value.value,
@@ -518,7 +482,7 @@ async function onRegenerate(index: number) {
             }
           }
           catch (e) {
-            console.log('JSON parsing error', e)
+            // console.log('JSON parsing error', e)
           }
           parse({
             chunk,

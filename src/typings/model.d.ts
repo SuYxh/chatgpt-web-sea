@@ -11,6 +11,7 @@ declare namespace Model {
 			apiKey?: string
 			// 模型聊天接口的地址(去除域名部分) , 默认是 /v1/chat/completions
 			chatAPI?: string
+			[key: string]: string | undefined;
 	}
 
 	type ModelList = Model[]
