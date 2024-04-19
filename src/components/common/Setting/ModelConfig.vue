@@ -2,11 +2,14 @@
 import { ref } from 'vue'
 import { NButton, NInput, NTabPane, NTabs } from 'naive-ui'
 import { useModel } from '@/views/chat/hooks/useModel'
+import { useWebSite } from '@/views/chat/hooks/useWebSite'
 
 const { getLocalModelData, getOneAPI, updateModelData, setOneAPI } = useModel()
+const { getLocalWebSiteData } = useWebSite()
 
 const oneAPI = ref(getOneAPI())
 const models = ref<Model.ModelList>(getLocalModelData())
+const webSite = ref<any>(getLocalWebSiteData())
 
 const computedUrl = (item: Partial<Model.Model>) => {
   if (item.baseUrl && item.chatAPI) {
@@ -84,4 +87,11 @@ const saveOneAPI = () => {
       </div>
     </NTabPane>
   </NTabs>
+
+  <div v-if="webSite.shop">
+    ApiKey 购买地址： <a :href="webSite.shop" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-500">{{ webSite.shop }}</a>
+  </div>
+  <div v-if="webSite.description">
+    联系方式： {{ webSite.description }}
+  </div>
 </template>

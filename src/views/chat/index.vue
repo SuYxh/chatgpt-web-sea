@@ -16,6 +16,7 @@ import Upload from './components/Upload/index.vue'
 import DisplayWall from './components/Upload/DisplayWall.vue'
 import ModelSelect from './components/Model/index.vue'
 import { useModel } from './hooks/useModel'
+import { useWebSite } from './hooks/useWebSite'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
@@ -41,7 +42,9 @@ const { usingContext, toggleUsingContext } = useUsingContext()
 const { usingInternet, toggleUsingInternet, closeInternet } = useUsingInternet()
 const { parse } = useParser()
 const { getModelList, getModelConfigByName, getOneAPI } = useModel()
+const { getWebSite } = useWebSite()
 getModelList()
+getWebSite()
 
 const { uuid } = route.params as { uuid: string }
 

@@ -37,6 +37,12 @@ export function fetchModelList<T = any>() {
   })
 }
 
+export function fetchWebSite<T = any>() {
+  return post<T>({
+    url: '/getWebSite',
+  })
+}
+
 export function fetchQiniuyunToken<T = any>() {
   return post<T>({
     url: '/getQiniuToken',

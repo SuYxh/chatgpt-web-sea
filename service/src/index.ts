@@ -146,6 +146,19 @@ router.post('/getModelList', async (req, res) => {
   res.send({ status: 'Success', message: '', data: list })
 })
 
+router.post('/getWebSite', async (req, res) => {
+  try {
+    const webSiteStr = process.env.WEB_SITE
+    const webSite = JSON.parse(webSiteStr)
+    res.send({ status: 'Success', message: '', data: webSite })
+  }
+  catch (error) {
+    console.log('web site 配置解析失败')
+    const defaultWebSite = { avatar: 'https://qn.huat.xyz/mac/202404152305055.jpeg', nickName: '二十一', contact: '', shop: '' }
+    res.send({ status: 'Success', message: '您配置 WEB_SITE 解析失败,使用默认的信息', data: defaultWebSite })
+  }
+})
+
 app.use('', router)
 app.use('/api', router)
 app.set('trust proxy', 1)
