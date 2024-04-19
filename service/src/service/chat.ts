@@ -5,6 +5,11 @@ import { getModelList } from './model'
 
 dotenv.config()
 
+const getKeyStrategy = () => {
+  const keyStrategy = process.env.KEY_STRATEGY || 3
+  return keyStrategy
+}
+
 const handleBearer = (key: string) => {
   if (!key.includes('Bearer')) {
     return `Bearer ${key}`
@@ -13,7 +18,7 @@ const handleBearer = (key: string) => {
 }
 
 const handleAuthorization = (authHeader, curModel) => {
-  const keyStrategy = process.env.KEY_STRATEGY
+  const keyStrategy = getKeyStrategy()
 
   // 只使用后端配置的 key
   if (+keyStrategy === 2) {
@@ -21,7 +26,17 @@ const handleAuthorization = (authHeader, curModel) => {
   }
 
   // 优先使用前端的 key，前端没有在使用后端的 key
-  return handleBearer(authHeader || curModel.apiKey)
+  let _authHeader = ''
+
+  // 前端没有配置的时候传递的是 Bearer
+  if (authHeader && authHeader !== 'Bearer') {
+    _authHeader = authHeader
+  }
+  else {
+    _authHeader = curModel.apiKey
+  }
+
+  return handleBearer(_authHeader)
 }
 
 export async function chatService(req, res) {
@@ -29,7 +44,7 @@ export async function chatService(req, res) {
     logger.info('req.headers', req.headers)
     logger.info('req.body', req.body)
 
-    const keyStrategy = process.env.KEY_STRATEGY
+    const keyStrategy = getKeyStrategy()
     logger.info('KEY_STRATEGY', keyStrategy)
     const authHeader = req.headers.authorization || req.headers.Authorization
 
