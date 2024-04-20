@@ -6,9 +6,13 @@
 
 
 
-![image-20240415234725099](https://qn.huat.xyz/mac/202404152347178.png)
+支持多个模型，模型可配置
+
+![image-20240420223451444](https://qn.huat.xyz/mac/202404202234546.png)
 
 
+
+数据流式返回
 
 ![image-20240415234905848](https://qn.huat.xyz/mac/202404152349908.png)
 
@@ -53,7 +57,14 @@
 
 ## 介绍
 
-在之前的基础上废弃了使用`chatgpt` 包来进行模型调用，所有的模型调用均直接请求相关接口。前端使用的 请求库由 `axios` 转换成 `fetch`
+⚠️ 废弃功能
+
+- 不再使用`chatgpt` 包来进行模型调用
+- 使用 `fetch` 替换 `axios`
+
+
+
+➕ 新增功能
 
 - [x] 兼容 在[One API](https://github.com/songquanpeng/one-api)、 [New API](https://github.com/Calcium-Ion/new-api)项目提供的中转接口
 - [x] 兼容 [kimi](https://github.com/LLM-Red-Team/kimi-free-api)
@@ -74,11 +85,6 @@
 /service/.env.example
 ```
 
-## TODO
-[✗] 语音对话
-[✗] 用户系统
-[✗] More...
-
 ## 前置要求
 
 ### Node
@@ -93,33 +99,6 @@ node -v
 如果你没有安装过 `pnpm`
 ```shell
 npm install pnpm -g
-```
-
-### 填写密钥
-
-你需要使用什么模型，就填写什么模型的密钥和接口地址。
-
-如果你有 `one-api` 或者` new-api` 项目提供的 key，那么只填写这一个就可以了，所有的模型都可以用。如果你填写了 有 `one-api` 或者` new-api` 提供的 key和接口，那么其他的 key 和接口就会失效
-
-当前配置的模型具体请参考 `defaultModelList` [./service/src/utils/model.ts](./service/src/utils/model.ts) 
-
-按照 `.env.example` 中提供的示例(需要你修改对应的key 和接口)配置就能跑通 `gpt-3.5-turbo` 和 `kimi`
-
-```
-# service/.env 文件
-
-# one-api 或者 new-api 项目提供的 key
-ONE_API_KEY=
-# one-api 或者 new-api 项目提供的接口地址
-ONE_API_BASE_URL=
-
-
-# Kimi接口，参考 https://github.com/LLM-Red-Team/kimi-free-api
-Kimi_API_BASE_URL=http://kimiapi.example.cn
-# 从 kimi.moonshot.cn 获取refresh_token
-Kimi_API_KEY=
-# 请求接口地址
-Kimi_Chat_API=
 ```
 
 
@@ -172,20 +151,67 @@ pnpm start
 pnpm dev
 ```
 
+
+
+
+
+
+
 ## 环境变量
+
+
 
 `API` 可用：
 
 - `ONE_API_KEY `:  `one-api` 或者 `new-api` 项目提供的 key
+
 - `ONE_API_BASE_URL` :  `one-api` 或者 `new-api` 项目提供的接口地址 
 
+- `ONE_API_Chat_API` ：模型对应的聊天接口，默认都是`/v1/chat/completions`
+
 - `OPENAI_API_KEY` : openai的 key
+
 - `OPENAI_API_BASE_URL` 设置接口地址，可选，默认：`https://api.openai.com`
+
 - `OPENAI_Chat_API` ： 模型对应的聊天接口，默认都是`/v1/chat/completions`
+
 - `Kimi_API_BASE_URL`:  Kimi接口，参考 https://github.com/LLM-Red-Team/kimi-free-api
+
 - `Kimi_API_KEY` :  从 `kimi.moonshot.cn` 获取`refresh_token`
+
 - `Kimi_Chat_API`: 模型对应的聊天接口，默认都是`/v1/chat/completions`
-- 更多API相关配置请看 `/service/.env.example`
+
+- `Step_API_BASE_URL`
+
+- `Step_API_KEY`
+
+- `Step_Chat_API`
+
+- `Qwen_API_BASE_URL`
+
+- `Qwen_API_KEY`
+
+- `Qwen_Chat_API`
+
+- `Glm_API_BASE_URL`
+
+- `Glm_API_KEY`
+
+- `Glm_Chat_API`
+
+- `Metaso_API_BASE_URL`
+
+- `Metaso_API_KEY`
+
+- `Metaso_Chat_API`
+
+- `Emohaa_API_BASE_URL`
+
+- `Emohaa_API_KEY`
+
+- `Emohaa_Chat_API`
+
+  >  更多API相关配置请看 `/service/.env.example`
 
 上传：
 
@@ -195,76 +221,113 @@ pnpm dev
 
 通用：
 
+- `DEBUG` 日志打印等级，默认是 `prod`  ， 支持 `dev` 、`test` 、`prod` 、`info`
+
 - `AUTH_SECRET_KEY` 访问权限密钥，可选
 
 - `MAX_REQUEST_PER_HOUR` 每小时最大请求次数，可选，默认无限
 
-- `TIMEOUT_MS` 超时，单位毫秒，可选
-
 - `HTTPS_PROXY` 支持 `http`，`https`, `socks5`，可选
+
+- `KEY_STRATEGY`  调用模型接口时使用认证信息的策略，默认值为 1
+
+  - 1: 调用模型接口的时使用前端传递的认证信息，在前端页面中的设置可以进行配置，如果前端没有传递则无法调用接口
+  - 2: 调用模型接口的时使用后端配置的认证信息，即使前端传递了也不使用。在进行 docker 部署的时候进行模型认证配置 
+  - 3: 调用模型接口的时优先使用前端传递的认证信息，如果前端没有传递，则使用后端配置的，如果都没有，则无法使用
+  
+- `WEB_SITE` 网站配置(需要配置成 JSON 字符串)，默认配置` {"avatar":"https://qn.huat.xyz/mac/202404152305055.jpeg","name":"二十三","description":"Y170088888","shop":"https://example.com"}`
+
+  - `avatar`: 头像  
+  - `nickName`: 昵称  
+  - `description`: 你的联系方式比如微信、QQ   
+  - `shop`: 你卖 key 的商店链接
+
+- `MODEL_CONFIG` 模型配置(需要配置成 JSON 字符串)。配置示例 `[{"label":"gpt-3.5-turbo","value":"gpt-3.5-turbo","baseUrl":"http://gpt.example.xyz","apiKey":"sk-ashdjashjdk","chatAPI":"/v1/chat/completions"},{"label":"Kimi","value":"kimi","baseUrl":"http://kimi.example.cn","apiKey":"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJp","chatAPI":"/v1/chat/completions"}]`
+
+- `MODEL_API` 模型配置，通过接口的形式获取模型配置， 优先级高于 `MODEL_CONFIG`
 
   
 
+
+
+## 食用说明
+
+### 权限
+
+通过 `KEY_STRATEGY` 参数进行配置
+
+- 1: 调用模型接口的时使用前端传递的认证信息，在前端页面中的设置可以进行配置，如果前端没有传递则无法调用接口
+- 2: 调用模型接口的时使用后端配置的认证信息，即使前端传递了也不使用。在进行 docker 部署的时候进行模型认证配置 
+- 3: 调用模型接口的时优先使用前端传递的认证信息，如果前端没有传递，则使用后端配置的，如果都没有，则无法使用
+
+
+
+### 模型
+
+#### 使用 one-api
+
+如果你使用 one-api 或者 new-api 提供的中转接口，那么只用填写这一个就可以了，后续的模型配置都不用填写。
+
+![image-20240420231200872](https://qn.huat.xyz/mac/202404202312990.png)
+
+联系方式配置在 `WEB_SITE` 中，可以看环境变量那一节。
+
+⚠️ 如果你的中转接口不能用了记得把这里清理一下，这个优先级比较高！
+
+
+
+#### 单独使用某个模型
+
+想使用那个，您配置哪个就行！注意清理掉 `one-api` 的配置
+
+![image-20240420231635531](https://qn.huat.xyz/mac/202404202316595.png)
+
+
+
 ## 打包
 
-### 使用 Docker
-
-#### Docker build & Run
-
-> 克隆项目本地执行
+### Docker
 
 ```bash
-docker build -t chatgpt-web-sea:1.0.0 .   
-
-# 前台运行
-docker run --rm -it -p 3002:3002 \
-	-e OPENAI_API_KEY=sk-ashdjashjdk \
-	-e OPENAI_API_BASE_URL=http://xxx.example.xyz \
-  -e Qiniuyun_ACCESS_KEY=Pui37Rsbdq57QnS892DPyFm \
-  -e Qiniuyun_SECRET_KEY=_gy7BBV0ixoeO1i \
-  -e Qiniuyun_BUCKET_NAME=bucketName \
-  -e Kimi_API_BASE_URL=http://kimi.example.cn \
-  -e Kimi_API_KEY=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ1c2VyLWNlbnRlciIsImV4cCI6MTcyMDUzNzg4NSwiaWF0IjoxNzEyNzYxODg1LCJqdGzNyMDcwNjhiNGJjaDAiLCJhYnN0cmFjdF91c2VyX2lkIjoiY25zNTkybzNyMDcwNjhiNGJjZ2cifQ.HQFe_L_amsLJXS8CMri0cZkMkwRBldNfSLizq5JWiEGaSJ1njHBOw \
-  --name chatgpt-web-sea \
-  chatgpt-web-sea:1.0.0
-
-
-# 后台运行
+# 仅使用前端配置的 key
 docker run -d -p 3002:3002 \
-	-e OPENAI_API_KEY=sk-ashdjashjdk \
-	-e OPENAI_API_BASE_URL=http://xxx.example.xyz \
-  -e Qiniuyun_ACCESS_KEY=Pui37Rsbdq57QnS892DPyFm \
-  -e Qiniuyun_SECRET_KEY=_gy7BBV0ixoeO1i \
-  -e Qiniuyun_BUCKET_NAME=bucketName \
-  -e Kimi_API_BASE_URL=http://kimi.example.cn \
-  -e Kimi_API_KEY=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ1c2VyLWNlbnRlciIsImV4cCI6MTcyMDUzNzg4NSwiaWF0IjoxNzEyNzYxODg1LCJqdGzNyMDcwNjhiNGJjaDAiLCJhYnN0cmFjdF91c2VyX2lkIjoiY25zNTkybzNyMDcwNjhiNGJjZ2cifQ.HQFe_L_amsLJXS8CMri0cZkMkwRBldNfSLizq5JWiEGaSJ1njHBOw \
-  --name chatgpt-web-sea \
-  chatgpt-web-sea:1.0.0
-
-# 运行地址
-http://localhost:3002/
-```
-
-
-
-##### 官方镜像
-
-> 获取官方镜像
-
-```
-docker run -d -p 3002:3002 \
-	-e OPENAI_API_KEY=sk-ashdjashjdk \
-	-e OPENAI_API_BASE_URL=http://xxx.example.xyz \
-  -e Qiniuyun_ACCESS_KEY=Pui37Rsbdq57QnS892DPyFm \
-  -e Qiniuyun_SECRET_KEY=_gy7BBV0ixoeO1i \
-  -e Qiniuyun_BUCKET_NAME=bucketName \
-  -e Kimi_API_BASE_URL=http://kimi.example.cn \
-  -e Kimi_API_KEY=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ1c2VyLWNlbnRlciIsImV4cCI6MTcyMDUzNzg4NSwiaWF0IjoxNzEyNzYxODg1LCJqdGzNyMDcwNjhiNGJjaDAiLCJhYnN0cmFjdF91c2VyX2lkIjoiY25zNTkybzNyMDcwNjhiNGJjZ2cifQ.HQFe_L_amsLJXS8CMri0cZkMkwRBldNfSLizq5JWiEGaSJ1njHBOw \
-  --name chatgpt-web-sea \
+ -e DEBUG=prod \
+ -e KEY_STRATEGY=1 \
+ -e Qiniuyun_ACCESS_KEY=Pui37RsbdDiBM57QnS892DPyFm \
+ -e Qiniuyun_SECRET_KEY=_gy7BBVDxrD710ixoeO1i \
+ -e Qiniuyun_BUCKET_NAME=bucket-name \
+ --name chatgpt-web-sea \
   jarvis0426/chatgpt-web-sea:latest
+
+
+# 使用后端配置的 key， KEY_STRATEGY 的值为 2 或者 3 都行
+# 使用one-api
+docker run -d -p 3002:3002 \
+  -e DEBUG=prod \
+  -e KEY_STRATEGY=3 \
+	-e ONE_API_KEY=sk-ashdjashjdk \
+	-e ONE_API_BASE_URL=http://xxx.example.xyz \	
+  -e Qiniuyun_ACCESS_KEY=Pui37Rsbdq57QnS892DPyFm \
+  -e Qiniuyun_SECRET_KEY=_gy7BBV0ixoeO1i \
+  -e Qiniuyun_BUCKET_NAME=bucketName \
+  --name chatgpt-web-sea \
+  	jarvis0426/chatgpt-web-sea:latest
+  
+# 使用后端配置的 key，KEY_STRATEGY 的值为 2 或者 3 都行  
+# 以 kimi 为例，你需要多少模型就需要配置多少
+docker run -d -p 3002:3002 \
+  -e DEBUG=prod \
+  -e KEY_STRATEGY=3 \
+  -e Qiniuyun_ACCESS_KEY=Pui37Rsbdq57QnS892DPyFm \
+  -e Qiniuyun_SECRET_KEY=_gy7BBV0ixoeO1i \
+  -e Qiniuyun_BUCKET_NAME=bucketName \
+  -e Kimi_API_BASE_URL=http://kimi.example.cn \
+  -e Kimi_API_KEY=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyQ.HQFe_L_amsLJXS8CMri0cZkMkwRBldNfSLizq5JWiEGaSJ1njHBOw \
+  --name chatgpt-web-sea \
+  	jarvis0426/chatgpt-web-sea:latest
 ```
 
-配置信息请你使用你自己的。
+> 配置信息请你使用你自己的。
 
 
 
