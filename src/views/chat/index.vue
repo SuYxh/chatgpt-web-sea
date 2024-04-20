@@ -88,7 +88,10 @@ function _buildUrlAndHeaders(defaultUrl: string, apiConfig: Model.Model, apiKeyP
   }
 
   const apiKey = apiConfig[apiKeyPath] ?? ''
-  headers.Authorization = `Bearer ${apiKey}`
+
+  if (apiKey) {
+    headers.Authorization = `Bearer ${apiKey}`
+  }
 
   return { url, headers }
 }
