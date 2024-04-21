@@ -247,7 +247,7 @@ async function onConversation() {
       console.log('当前选择的模型', curModel.value)
 
       if (!curModel.value.value) {
-        ms.warning('请重新选择一下模型')
+        ms.warning('请新建回话或者重新选择一下模型')
         return
       }
       const { url, headers } = buildUrlAndHeaders()

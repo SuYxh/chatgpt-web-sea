@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import { ref } from 'vue'
-import { NButton, NInput, NTabPane, NTabs } from 'naive-ui'
+import { NButton, NInput, NTabPane, NTabs, useMessage } from 'naive-ui'
 import { useModel } from '@/views/chat/hooks/useModel'
 import { useWebSite } from '@/views/chat/hooks/useWebSite'
 
@@ -10,6 +10,7 @@ const { getLocalWebSiteData } = useWebSite()
 const oneAPI = ref(getOneAPI())
 const models = ref<Model.ModelList>(getLocalModelData())
 const webSite = ref<any>(getLocalWebSiteData())
+const ms = useMessage()
 
 const computedUrl = (item: Partial<Model.Model>) => {
   if (item.baseUrl && item.chatAPI) {
@@ -20,10 +21,12 @@ const computedUrl = (item: Partial<Model.Model>) => {
 
 const saveModelAuthorization = () => {
   updateModelData(models.value)
+  ms.success('保存成功')
 }
 
 const saveOneAPI = () => {
   setOneAPI(oneAPI.value)
+  ms.success('保存成功')
 }
 </script>
 
