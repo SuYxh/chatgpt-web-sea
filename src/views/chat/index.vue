@@ -60,6 +60,7 @@ const loading = ref<boolean>(false)
 const inputRef = ref<Ref | null>(null)
 const uploadRef = ref<Ref | null>(null)
 const fileList = ref<any[]>([])
+const selectModel = ref<any>({})
 
 // 添加PromptStore
 const promptStore = usePromptStore()
@@ -246,14 +247,14 @@ async function onConversation() {
     const fetchChatAPIOnce = async () => {
       console.log('当前选择的模型', curModel.value)
 
-      if (!curModel.value.value) {
+      if (!curModel.value.value && !selectModel.value.value) {
         ms.warning('请新建回话或者重新选择一下模型')
         return
       }
       const { url, headers } = buildUrlAndHeaders()
 
       const body: any = {
-        model: curModel.value.value,
+        model: curModel.value.value || selectModel.value.value,
         messages,
         stream: true,
       }
@@ -684,6 +685,11 @@ const renderOption = (option: { label: string }) => {
   return []
 }
 
+const handleSelectModel = (model: any) => {
+  console.log('model', model)
+  selectModel.value = model
+}
+
 const uploadComplete = (files: any) => {
   console.log('文件上传完成', files)
   fileList.value.push(files)
@@ -750,7 +756,7 @@ onUnmounted(() => {
               <SvgIcon icon="ri:bubble-chart-fill" class="mr-2 text-3xl" />
               <!-- <span>{{ t('chat.newChatTitle') }}</span> -->
               <!-- TOOD: 增加模型选择下拉框，然后数据放在 当前回话中，根据 uuid 去取 -->
-              <ModelSelect />
+              <ModelSelect @update="handleSelectModel" />
             </div>
           </template>
           <template v-else>

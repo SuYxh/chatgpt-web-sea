@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineComponent, onMounted, ref, watch } from 'vue'
 import { NSelect, NSpace } from 'naive-ui'
 import { useRoute } from 'vue-router'
 import { useChatStore } from '@/store'
@@ -38,9 +38,14 @@ export default defineComponent({
       handleChange(options.value[0].value)
     }
 
+    watch(options, (newVal) => {
+      if (newVal?.length) {
+        setDefaultModel()
+      }
+    })
+
     onMounted(() => {
       getModelList()
-      setDefaultModel()
     })
 
     return {
