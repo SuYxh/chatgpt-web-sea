@@ -28,7 +28,6 @@
 	- [前置要求](#前置要求)
 		- [Node](#node)
 		- [PNPM](#pnpm)
-		- [填写密钥](#填写密钥)
 	- [安装依赖](#安装依赖)
 		- [后端](#后端)
 		- [前端](#前端)
@@ -36,6 +35,7 @@
 		- [后端服务](#后端服务)
 		- [前端网页](#前端网页)
 	- [环境变量](#环境变量)
+	- [食用说明](#食用说明)
 	- [打包](#打包)
 		- [使用 Docker](#使用-docker)
 			- [Docker 参数示例](#docker-参数示例)
@@ -84,6 +84,28 @@
 ```
 /service/.env.example
 ```
+
+
+
+## TODO
+
+[✗] 语音对话
+
+[✗] 手机号注册
+
+[✗] 用户模块
+
+[✗] 订单模块
+
+[✗] 支付能力
+
+[✗] 后台管理
+
+[✗] More...
+
+
+
+> https://ask.vuejs.news 实现了手机号注册、用户模块、订单模块、支付、以及后台，可以体验下。
 
 ## 前置要求
 
@@ -150,10 +172,6 @@ pnpm start
 ```shell
 pnpm dev
 ```
-
-
-
-
 
 
 
@@ -342,11 +360,11 @@ docker run -d -p 3002:3002 \
 将下面配置填入nginx配置文件中，可以参考 `docker-compose/nginx/nginx.conf` 文件中添加反爬虫的方法
 
 ```
-    # 防止爬虫抓取
-    if ($http_user_agent ~* "360Spider|JikeSpider|Spider|spider|bot|Bot|2345Explorer|curl|wget|webZIP|qihoobot|Baiduspider|Googlebot|Googlebot-Mobile|Googlebot-Image|Mediapartners-Google|Adsbot-Google|Feedfetcher-Google|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot|NSPlayer|bingbot")
-    {
-      return 403;
-    }
+# 防止爬虫抓取
+if ($http_user_agent ~* "360Spider|JikeSpider|Spider|spider|bot|Bot|2345Explorer|curl|wget|webZIP|qihoobot|Baiduspider|Googlebot|Googlebot-Mobile|Googlebot-Image|Mediapartners-Google|Adsbot-Google|Feedfetcher-Google|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot|NSPlayer|bingbot")
+{
+  return 403;
+}
 ```
 
 
@@ -409,19 +427,11 @@ Q: 前端没有打字机效果？
 
 A: 一种可能原因是经过 Nginx 反向代理，开启了 buffer，则 Nginx 会尝试从后端缓冲一定大小的数据再发送给浏览器。请尝试在反代参数后添加 `proxy_buffering off;`，然后重载 Nginx。其他 web server 配置同理。
 
-## 参与贡献
-
-贡献之前请先阅读 [贡献指南](./CONTRIBUTING.md)
-
-感谢所有做过贡献的人!
-
-<a href="https://github.com/SuYxh/chatgpt-web-llm-red-team/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=SuYxh/chatgpt-web-llm-red-team" />
-</a>
 
 ## 致谢
 
 感谢 [JetBrains](https://www.jetbrains.com/) 为这个项目提供免费开源许可的软件。
+
 
 ## 赞助
 
