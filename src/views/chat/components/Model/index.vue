@@ -4,6 +4,7 @@ import { NSelect, NSpace } from 'naive-ui'
 import { useRoute } from 'vue-router'
 import { useChatStore } from '@/store'
 import { useModel } from '@/views/chat/hooks/useModel'
+import { fetchModelList } from '@/api'
 
 export default defineComponent({
   components: {
@@ -29,9 +30,19 @@ export default defineComponent({
       emit('update', item)
     }
 
-    const getModelList = () => {
+    const getModelList = async () => {
+      // 先从本地获取
       const models = getLocalModelData()
-      options.value = models
+      // 本地没有走线上
+      if (!models.length) {
+        const result = await fetchModelList()
+        if (result.status === 'Success') {
+          options.value = result.data
+        }
+      }
+      else {
+        options.value = models
+      }
     }
 
     const setDefaultModel = () => {
@@ -44,8 +55,8 @@ export default defineComponent({
       }
     })
 
-    onMounted(() => {
-      getModelList()
+    onMounted(async () => {
+      await getModelList()
     })
 
     return {
