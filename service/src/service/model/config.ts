@@ -62,6 +62,13 @@ export const defaultModelList = [
     chatAPI: process.env.Emohaa_Chat_API || defaultChatAPI,
   },
   {
+    label: '讯飞星火',
+    value: 'spark',
+    baseUrl: process.env.ONE_API_BASE_URL || process.env.Spark_API_BASE_URL,
+    apiKey: process.env.ONE_API_KEY || process.env.Spark_API_KEY,
+    chatAPI: process.env.Spark_Chat_API || defaultChatAPI,
+  },
+  {
     label: 'gpt-3.5-turbo-0613',
     value: 'gpt-3.5-turbo-0613',
     baseUrl: process.env.ONE_API_BASE_URL || process.env.OPENAI_API_BASE_URL,
