@@ -18,6 +18,30 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  // overview
+  {
+    path: '/setting',
+    name: 'Setting',
+    component: () => import('@/views/setting/layout/index.vue'),
+    redirect: '/setting/overview',
+    children: [
+      {
+        path: '/setting/overview',
+        name: 'settingOverview',
+        component: () => import('@/views/setting/overview/index.vue'),
+      },
+      {
+        path: '/setting/model',
+        name: 'settingModel',
+        component: () => import('@/views/setting/model/index.vue'),
+      },
+      {
+        path: '/setting/about',
+        name: 'settingAbout',
+        component: () => import('@/views/setting/about/index.vue'),
+      },
+    ],
+  },
   {
     path: '/404',
     name: '404',

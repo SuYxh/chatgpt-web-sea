@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import type { Ref } from 'vue'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { NAutoComplete, NButton, NInput, NPopover, useDialog, useMessage } from 'naive-ui'
@@ -19,7 +19,7 @@ import { useModel } from './hooks/useModel'
 import { useWebSite } from './hooks/useWebSite'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
-import { useChatStore, usePromptStore } from '@/store'
+import { useChatStore, useModelStore, usePromptStore } from '@/store'
 import { t } from '@/locales'
 import { fetchWithAuth } from '@/utils/request/fetch'
 import { isImage } from '@/utils/is/index'
@@ -36,6 +36,15 @@ const dialog = useDialog()
 const ms = useMessage()
 
 const chatStore = useChatStore()
+
+const modelStore = useModelStore()
+
+watch(modelStore, (newVal) => {
+  console.log('modelStore change', newVal)
+}, {
+  immediate: true,
+  deep: true,
+})
 
 const { isMobile } = useBasicLayout()
 const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat()

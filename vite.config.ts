@@ -43,9 +43,9 @@ export default defineConfig((env) => {
         },
       },
     },
-    esbuild: {
-      drop: ['console', 'debugger'],
-    },
+    // esbuild: {
+    //   drop: ['console', 'debugger'],
+    // },
     build: {
       reportCompressedSize: false,
       sourcemap: false,

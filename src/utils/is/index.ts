@@ -57,3 +57,10 @@ export function isFile<T extends File>(value: T | unknown): value is T {
 export function isImage(type: string) {
   return type.startsWith('image/')
 }
+
+export function isEmpty(obj: any) {
+  if (!obj) {
+    return true
+  }
+  return obj && Object.keys(obj)?.length === 0
+}
