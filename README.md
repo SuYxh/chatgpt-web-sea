@@ -1,24 +1,32 @@
 # ChatGPT Web Sea
 
-> 声明：此项目只发布于 GitHub，基于 MIT 协议，免费且作为开源学习使用。并且不会有任何形式的卖号、付费服务、讨论群、讨论组等行为。谨防受骗。本项目为开源项目，在[chatgpt-web]([Chanzhaoyu/chatgpt-web: 用 Express 和 Vue3 搭建的 ChatGPT 演示网页 (github.com)](https://github.com/Chanzhaoyu/chatgpt-web))的基础上进行二次开发，感谢原作者的无私奉献。 使用者必须在遵循**法律法规**的情况下使用，不得用于非法用途。
+> 声明：此项目只发布于 GitHub，基于 MIT 协议，免费且作为开源学习使用。并且不会有任何形式的卖号、付费服务，谨防受骗。本项目为开源项目，基于[chatgpt-web](https://github.com/Chanzhaoyu/chatgpt-web)进行二次开发，感谢原作者的无私奉献。 使用者必须在遵循**法律法规**的情况下使用，不得用于非法用途。
 
  :warning:根据[《生成式人工智能服务管理暂行办法》](http://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm)的要求，请勿对中国地区公众提供一切未经备案的生成式人工智能服务。
 
 
 
-支持多个模型，模型可配置
+**支持所有符合 openai 接口标准的模型**
 
-![image-20240420223451444](https://qn.huat.xyz/mac/202404202234546.png)
-
-
-
-数据流式返回
-
-![image-20240415234905848](https://qn.huat.xyz/mac/202404152349908.png)
+![模型选择tip](https://qn.huat.xyz/mac/202404282232254.jpg)
 
 
 
-![image-20240415234937362](https://qn.huat.xyz/mac/202404152349420.png)
+![kimi](https://qn.huat.xyz/mac/202404282237680.png)
+
+
+
+**模型可自由选择、自行配置、扩展，兼容 `OneAPI`** 
+
+![模型配置](https://qn.huat.xyz/mac/202404282234270.jpg)
+
+
+
+**内置ChatGPT 中文调教指南**
+
+![提示词](https://qn.huat.xyz/mac/202404282236388.jpg)
+
+![](https://qn.huat.xyz/mac/202404282258701.png)
 
 
 
@@ -28,6 +36,7 @@
 	- [前置要求](#前置要求)
 		- [Node](#node)
 		- [PNPM](#pnpm)
+		- [图片上传](#图片上传)
 	- [安装依赖](#安装依赖)
 		- [后端](#后端)
 		- [前端](#前端)
@@ -38,8 +47,6 @@
 	- [食用说明](#食用说明)
 	- [打包](#打包)
 		- [使用 Docker](#使用-docker)
-			- [Docker 参数示例](#docker-参数示例)
-			- [Docker build \& Run](#docker-build--run)
 			- [Docker compose](#docker-compose)
 			- [防止爬虫抓取](#防止爬虫抓取)
 		- [使用 Railway 部署](#使用-railway-部署)
@@ -66,26 +73,27 @@
 
 ➕ 新增功能
 
-- [x] 兼容 在[One API](https://github.com/songquanpeng/one-api)、 [New API](https://github.com/Calcium-Ion/new-api)项目提供的中转接口
 - [x] 兼容 [kimi](https://github.com/LLM-Red-Team/kimi-free-api)
+
 - [x] 兼容 [阶跃星辰](https://github.com/LLM-Red-Team/step-free-api)
+
 - [x] 兼容 [阿里通义](https://github.com/LLM-Red-Team/qwen-free-api)
+
 - [x] 兼容 [智谱清言](https://github.com/LLM-Red-Team/glm-free-api)
+
 - [x] 兼容 [秘塔AI ](https://github.com/LLM-Red-Team/metaso-free-api)
+
 - [x] 兼容 [聆心智能](https://github.com/LLM-Red-Team/emohaa-free-api)
+
+- [x] 兼容 [讯飞星火](https://github.com/LLM-Red-Team/spark-free-api)
+
+- [x] 兼容 在[One API](https://github.com/songquanpeng/one-api)、 [New API](https://github.com/Calcium-Ion/new-api)项目提供的中转接口
+
 - [x] 增加图片上传的能力，需要配置七牛云
 
+- [x] 增加模型配置页面，支持自由配置模型
 
-
-环境变量：
-
-全部参数变量请查看或[这里](#环境变量)
-
-```
-/service/.env.example
-```
-
-
+  
 
 ## TODO
 
@@ -105,7 +113,7 @@
 
 
 
-> https://ask.vuejs.news 实现了手机号注册、用户模块、订单模块、支付、以及后台，可以体验下。
+> https://ask.vuejs.news 实现了手机号注册、用户模块、订单模块、支付、以及后台，可体验。
 
 ## 前置要求
 
@@ -136,7 +144,7 @@ Qiniuyun_SECRET_KEY=_gy7BBVDxrD706R10ixoeO1i
 Qiniuyun_BUCKET_NAME=bucketName
 ```
 
-> 如果不配置，就无法上传图片，但是不影响对话
+> 如果不配置，就无法上传图片，但是不影响对话功能
 
 
 
@@ -177,60 +185,6 @@ pnpm dev
 
 ## 环境变量
 
-
-
-`API` 可用：
-
-- `ONE_API_KEY `:  `one-api` 或者 `new-api` 项目提供的 key
-
-- `ONE_API_BASE_URL` :  `one-api` 或者 `new-api` 项目提供的接口地址 
-
-- `ONE_API_Chat_API` ：模型对应的聊天接口，默认都是`/v1/chat/completions`
-
-- `OPENAI_API_KEY` : openai的 key
-
-- `OPENAI_API_BASE_URL` 设置接口地址，可选，默认：`https://api.openai.com`
-
-- `OPENAI_Chat_API` ： 模型对应的聊天接口，默认都是`/v1/chat/completions`
-
-- `Kimi_API_BASE_URL`:  Kimi接口，参考 https://github.com/LLM-Red-Team/kimi-free-api
-
-- `Kimi_API_KEY` :  从 `kimi.moonshot.cn` 获取`refresh_token`
-
-- `Kimi_Chat_API`: 模型对应的聊天接口，默认都是`/v1/chat/completions`
-
-- `Step_API_BASE_URL`
-
-- `Step_API_KEY`
-
-- `Step_Chat_API`
-
-- `Qwen_API_BASE_URL`
-
-- `Qwen_API_KEY`
-
-- `Qwen_Chat_API`
-
-- `Glm_API_BASE_URL`
-
-- `Glm_API_KEY`
-
-- `Glm_Chat_API`
-
-- `Metaso_API_BASE_URL`
-
-- `Metaso_API_KEY`
-
-- `Metaso_Chat_API`
-
-- `Emohaa_API_BASE_URL`
-
-- `Emohaa_API_KEY`
-
-- `Emohaa_Chat_API`
-
-  >  更多API相关配置请看 `/service/.env.example`
-
 上传：
 
 - `Qiniuyun_ACCESS_KEY`:  七牛云获取到的`ACCESS_KEY`
@@ -247,12 +201,6 @@ pnpm dev
 
 - `HTTPS_PROXY` 支持 `http`，`https`, `socks5`，可选
 
-- `KEY_STRATEGY`  调用模型接口时使用认证信息的策略，默认值为 1
-
-  - 1: 调用模型接口的时使用前端传递的认证信息，在前端页面中的设置可以进行配置，如果前端没有传递则无法调用接口
-  - 2: 调用模型接口的时使用后端配置的认证信息，即使前端传递了也不使用。在进行 docker 部署的时候进行模型认证配置 
-  - 3: 调用模型接口的时优先使用前端传递的认证信息，如果前端没有传递，则使用后端配置的，如果都没有，则无法使用
-  
 - `WEB_SITE` 网站配置(需要配置成 JSON 字符串)，默认配置` {"avatar":"https://qn.huat.xyz/mac/202404152305055.jpeg","name":"二十三","description":"Y170088888","shop":"https://example.com"}`
 
   - `avatar`: 头像  
@@ -260,45 +208,47 @@ pnpm dev
   - `description`: 你的联系方式比如微信、QQ   
   - `shop`: 你卖 key 的商店链接
 
-- `MODEL_CONFIG` 模型配置(需要配置成 JSON 字符串)。配置示例 `[{"label":"gpt-3.5-turbo","value":"gpt-3.5-turbo","baseUrl":"http://gpt.example.xyz","apiKey":"sk-ashdjashjdk","chatAPI":"/v1/chat/completions"},{"label":"Kimi","value":"kimi","baseUrl":"http://kimi.example.cn","apiKey":"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJp","chatAPI":"/v1/chat/completions"}]`
-
-- `MODEL_API` 模型配置，通过接口的形式获取模型配置， 优先级高于 `MODEL_CONFIG`
-
   
-
-
 
 ## 食用说明
 
-### 权限
 
-通过 `KEY_STRATEGY` 参数进行配置
 
-- 1: 调用模型接口的时使用前端传递的认证信息，在前端页面中的设置可以进行配置，如果前端没有传递则无法调用接口
-- 2: 调用模型接口的时使用后端配置的认证信息，即使前端传递了也不使用。在进行 docker 部署的时候进行模型认证配置 
-- 3: 调用模型接口的时优先使用前端传递的认证信息，如果前端没有传递，则使用后端配置的，如果都没有，则无法使用
+### 模型配置
+
+![模型配置](https://qn.huat.xyz/mac/202404282245372.jpg)
 
 
 
-### 模型
+**开关按钮**： 控制当前平台的模型是否启用，关闭后，这个平台下的所有模型都无法被选择。
 
-#### 使用 one-api
+**API Key**： 调用接口的凭证，不同平台的不同。
 
-如果你使用 one-api 或者 new-api 提供的中转接口，那么只用填写这一个就可以了，后续的模型配置都不用填写。
+**接口代理地址**：调用模型接口的域名，比如： https://example.vuejs.news
 
-![image-20240420231200872](https://qn.huat.xyz/mac/202404202312990.png)
+**聊天接口地址**：一般都是 `/v1/chat/completions` ，一般不用改
 
-联系方式配置在 `WEB_SITE` 中，可以看环境变量那一节。
+**模型列表**：可以选择需要的内置模型，被选中的模型会出现在聊天页面的模型选择下拉框中。同时也支持模型扩展， **直接输入模型名称** 即可，会实时保存。
 
-⚠️ 如果你的中转接口不能用了记得把这里清理一下，这个优先级比较高！
+**连通性检查**：检查当前模型是否可用，**只有点击`检查按钮`才会保存 `API Key` 和 `接口代理地址`**
+
+> 如果你使用的是 one-api 项目提供的接口，那么所有平台的 apikey 和 接口代理地址 都填写一样的。
 
 
 
-#### 单独使用某个模型
+### 提示词
 
-想使用那个，您配置哪个就行！注意清理掉 `one-api` 的配置
+![提示词](https://qn.huat.xyz/mac/202404282255154.jpg)
 
-![image-20240420231635531](https://qn.huat.xyz/mac/202404202316595.png)
+
+
+你将项目运行起来了，这里应该是空的，需要手动安装一下，步骤如下：
+
+![image-20240428225643948](https://qn.huat.xyz/mac/202404282256999.png)
+
+使用
+
+![image-20240428225804804](https://qn.huat.xyz/mac/202404282258865.png)
 
 
 
@@ -307,45 +257,16 @@ pnpm dev
 ### Docker
 
 ```bash
-# 仅使用前端配置的 key
 docker run -d -p 3002:3002 \
  -e DEBUG=prod \
- -e KEY_STRATEGY=1 \
  -e Qiniuyun_ACCESS_KEY=Pui37RsbdDiBM57QnS892DPyFm \
  -e Qiniuyun_SECRET_KEY=_gy7BBVDxrD710ixoeO1i \
  -e Qiniuyun_BUCKET_NAME=bucket-name \
  --name chatgpt-web-sea \
   jarvis0426/chatgpt-web-sea:latest
-
-
-# 使用后端配置的 key， KEY_STRATEGY 的值为 2 或者 3 都行
-# 使用one-api
-docker run -d -p 3002:3002 \
-  -e DEBUG=prod \
-  -e KEY_STRATEGY=3 \
-	-e ONE_API_KEY=sk-ashdjashjdk \
-	-e ONE_API_BASE_URL=http://xxx.example.xyz \	
-  -e Qiniuyun_ACCESS_KEY=Pui37Rsbdq57QnS892DPyFm \
-  -e Qiniuyun_SECRET_KEY=_gy7BBV0ixoeO1i \
-  -e Qiniuyun_BUCKET_NAME=bucketName \
-  --name chatgpt-web-sea \
-  	jarvis0426/chatgpt-web-sea:latest
-  
-# 使用后端配置的 key，KEY_STRATEGY 的值为 2 或者 3 都行  
-# 以 kimi 为例，你需要多少模型就需要配置多少
-docker run -d -p 3002:3002 \
-  -e DEBUG=prod \
-  -e KEY_STRATEGY=3 \
-  -e Qiniuyun_ACCESS_KEY=Pui37Rsbdq57QnS892DPyFm \
-  -e Qiniuyun_SECRET_KEY=_gy7BBV0ixoeO1i \
-  -e Qiniuyun_BUCKET_NAME=bucketName \
-  -e Kimi_API_BASE_URL=http://kimi.example.cn \
-  -e Kimi_API_KEY=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyQ.HQFe_L_amsLJXS8CMri0cZkMkwRBldNfSLizq5JWiEGaSJ1njHBOw \
-  --name chatgpt-web-sea \
-  	jarvis0426/chatgpt-web-sea:latest
 ```
 
-> 配置信息请你使用你自己的。
+> 七牛云的配置信息请你使用你自己的。
 
 
 
@@ -415,17 +336,31 @@ Q: 为什么 `Git` 提交总是报错？
 
 A: 因为有提交信息验证，请遵循 [Commit 指南](./CONTRIBUTING.md)
 
+
+
 Q: 如果只使用前端页面，在哪里改请求接口？
 
 A: 根目录下 `.env` 文件中的 `VITE_GLOB_API_URL` 字段。
+
+
 
 Q: 文件保存时全部爆红?
 
 A: `vscode` 请安装项目推荐插件，或手动安装 `Eslint` 插件。
 
+
+
 Q: 前端没有打字机效果？
 
 A: 一种可能原因是经过 Nginx 反向代理，开启了 buffer，则 Nginx 会尝试从后端缓冲一定大小的数据再发送给浏览器。请尝试在反代参数后添加 `proxy_buffering off;`，然后重载 Nginx。其他 web server 配置同理。
+
+
+
+Q: 如何扩展不存在的模型？
+
+A: 找对对应的平台，在模型选择中手动输入你需要的模型，输入的内容就是模型名称，系统会自动保存
+
+
 
 
 ## 致谢
