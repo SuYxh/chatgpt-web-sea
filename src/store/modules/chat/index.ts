@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { defaultState, getLocalState, setLocalState } from './helper'
 import { router } from '@/router'
 import { t } from '@/locales'
+import type { Model } from '@/store/modules/model/type'
 
 export const useChatStore = defineStore('chat-store', {
   state: (): Chat.ChatState => getLocalState(),
@@ -26,19 +27,18 @@ export const useChatStore = defineStore('chat-store', {
       return (uuid?: number) => {
         if (uuid) {
           const models = state.chat.find(item => item.uuid === uuid)?.model ?? {}
-          return models as Model.Model
+          return models as Model
         }
-        return {} as Model.Model
+        return {} as Model
       }
     },
   },
 
   actions: {
-    setModelByUuid(uuid: number, model: any) {
+    setModelByUuid(uuid: number, model: Model) {
       if (!uuid || uuid === 0) {
         return
       }
-      console.log('this.chat', this.chat)
       const curChat = this.chat.find(item => item.uuid === uuid) ?? ({} as any)
       curChat.model = model
       this.recordState()

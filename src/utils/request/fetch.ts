@@ -18,7 +18,6 @@ export async function fetchWithAuth(input: RequestInfo, init?: RequestInit): Pro
     headers: { ...defaultHeaders, ...init?.headers || {} },
   }
 
-  console.log('fetchInit', fetchInit)
   const url = /^https?:/i.test(input.toString()) ? input : `${baseUrl}${input}`
   const response = await fetch(url, fetchInit)
 

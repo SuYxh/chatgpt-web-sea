@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import type { Ref } from 'vue'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { NAutoComplete, NButton, NInput, NPopover, useDialog, useMessage } from 'naive-ui'
@@ -15,7 +15,6 @@ import { useParser } from './hooks/useParser'
 import Upload from './components/Upload/index.vue'
 import DisplayWall from './components/Upload/DisplayWall.vue'
 import ModelSelect from './components/Model/index.vue'
-import { useModel } from './hooks/useModel'
 import { useWebSite } from './hooks/useWebSite'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
@@ -36,15 +35,7 @@ const dialog = useDialog()
 const ms = useMessage()
 
 const chatStore = useChatStore()
-
 const modelStore = useModelStore()
-
-watch(modelStore, (newVal) => {
-  console.log('modelStore change', newVal)
-}, {
-  immediate: true,
-  deep: true,
-})
 
 const { isMobile } = useBasicLayout()
 const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat()
@@ -52,15 +43,14 @@ const { scrollRef, scrollToBottom, scrollToBottomIfAtBottom } = useScroll()
 const { usingContext, toggleUsingContext } = useUsingContext()
 const { usingInternet, toggleUsingInternet, closeInternet } = useUsingInternet()
 const { parse } = useParser()
-const { getModelList, getModelConfigByName, getOneAPI } = useModel()
 const { getWebSite } = useWebSite()
-getModelList()
 getWebSite()
 
 const { uuid } = route.params as { uuid: string }
 
 const dataSources = computed(() => chatStore.getChatByUuid(+uuid))
 const curModel = computed(() => chatStore.getModelByUuid(+uuid))
+console.log('curModel', curModel)
 const isGPT = computed(() => curModel.value?.value?.includes('gpt'))
 const conversationList = computed(() => dataSources.value.filter(item => (!item.inversion && !!item.conversationOptions)))
 
@@ -87,38 +77,20 @@ function handleSubmit() {
   onConversation()
 }
 
-function _buildUrlAndHeaders(defaultUrl: string, apiConfig: Model.Model, apiKeyPath = 'apiKey'): { url: string; headers: any } {
+function buildUrlAndHeaders() {
+  const modelPlatform = modelStore.models.find(v => v.group === curModel.value.group)
+
   const headers: any = {
     'Content-Type': 'application/json',
   }
-  let url = defaultUrl
 
-  if (apiConfig.baseUrl && apiConfig.chatAPI) {
-    url = apiConfig.baseUrl + apiConfig.chatAPI
+  if (modelPlatform?.apikey) {
+    headers.Authorization = `Bearer ${modelPlatform?.apikey}`
   }
 
-  const apiKey = apiConfig[apiKeyPath] ?? ''
-
-  if (apiKey) {
-    headers.Authorization = `Bearer ${apiKey}`
-  }
-
-  return { url, headers }
-}
-
-function buildUrlAndHeaders() {
-  const url = '/chat-process'
-
-  const oneAPIConfig = getOneAPI()
-  console.log('oneAPIConfig', oneAPIConfig)
-
-  if (oneAPIConfig.baseUrl && oneAPIConfig.chatAPI && oneAPIConfig.apiKey) {
-    return _buildUrlAndHeaders(url, oneAPIConfig)
-  }
-  else {
-    const curModelConfig = getModelConfigByName(curModel.value.value)
-    console.log('curModelConfig', curModelConfig)
-    return _buildUrlAndHeaders(url, curModelConfig, 'apiKey')
+  return {
+    baseUrl: modelPlatform?.baseUrl,
+    headers,
   }
 }
 
@@ -260,9 +232,11 @@ async function onConversation() {
         ms.warning('请新建回话或者重新选择一下模型')
         return
       }
-      const { url, headers } = buildUrlAndHeaders()
+
+      const { baseUrl, headers } = buildUrlAndHeaders()
 
       const body: any = {
+        baseUrl,
         model: curModel.value.value || selectModel.value.value,
         messages,
         stream: true,
@@ -272,7 +246,7 @@ async function onConversation() {
         body.use_search = usingInternet.value
       }
 
-      const response = await fetchWithAuth(url, {
+      const response = await fetchWithAuth('/chat-process', {
         headers,
         method: 'POST',
         body: JSON.stringify(body),
@@ -444,9 +418,10 @@ async function onRegenerate(index: number) {
 
     const fetchChatAPIOnce = async () => {
       console.log('当前选择的模型', curModel.value)
-      const { url, headers } = buildUrlAndHeaders()
+      const { baseUrl, headers } = buildUrlAndHeaders()
 
       const body: any = {
+        baseUrl,
         model: curModel.value.value,
         // parent_message_id: parentMessageId,
         // TODO: 还需要处理没有开启上下文的情况
@@ -460,7 +435,7 @@ async function onRegenerate(index: number) {
       }
 
       // fetchWithAuth
-      const response = await fetchWithAuth(url, {
+      const response = await fetchWithAuth('/chat-process', {
         headers,
         method: 'POST',
         // TODO: 需要根据不同的模型组合不同的参数

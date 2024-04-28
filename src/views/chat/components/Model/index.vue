@@ -1,10 +1,9 @@
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 import { NSelect, NSpace } from 'naive-ui'
 import { useRoute } from 'vue-router'
-import { useChatStore } from '@/store'
-import { useModel } from '@/views/chat/hooks/useModel'
-import { fetchModelList } from '@/api'
+import { useChatStore, useModelStore } from '@/store'
+import type { Model, PlatformConfig } from '@/store/modules/model/type'
 
 export default defineComponent({
   components: {
@@ -14,35 +13,41 @@ export default defineComponent({
   emits: ['update'],
   setup(props, { emit }) {
     const chatStore = useChatStore()
-    const route = useRoute()
-    const { getLocalModelData } = useModel()
+    const modelStore = useModelStore()
 
+    const route = useRoute()
     const { uuid } = route.params as { uuid: string }
 
+    const isInit = ref(true)
     const selectedValue = ref('gpt-3.5-turbo')
-    // TODO: 模型由接口获取
-    const options = ref<Model.ModelList>([])
+    const options = ref<Model[]>([])
+
+    const handleOptions = (modelList: PlatformConfig[]) => {
+      let models: Model[] = []
+      const enableModels = modelList.filter(v => v.enable)
+      enableModels.forEach((item) => {
+        if (item.modelList?.length) {
+          const selectModel = item.modelList.filter(i => i.selected === 1)
+          models = models.concat(selectModel)
+        }
+      })
+      options.value = models
+    }
+
+    watch(() => modelStore.models, (newVal) => {
+      if (newVal) {
+        handleOptions(newVal)
+      }
+    }, {
+      immediate: true,
+      deep: true,
+    })
 
     const handleChange = (val: string) => {
       console.log('下拉筛选的模型', val)
-      const item = options.value.filter((v: Model.Model) => v.value === val)?.[0] ?? {}
+      const item = options.value.filter((v: Model) => v.value === val)?.[0] ?? {}
       chatStore.setModelByUuid(+uuid, item)
       emit('update', item)
-    }
-
-    const getModelList = async () => {
-      // 先从本地获取
-      const models = getLocalModelData()
-      // 本地没有走线上
-      if (!models.length) {
-        const result = await fetchModelList()
-        if (result.status === 'Success') {
-          options.value = result.data
-        }
-      }
-      else {
-        options.value = models
-      }
     }
 
     const setDefaultModel = () => {
@@ -50,13 +55,13 @@ export default defineComponent({
     }
 
     watch(options, (newVal) => {
-      if (newVal?.length) {
+      if (newVal?.length && isInit.value) {
+        isInit.value = false
         setDefaultModel()
       }
-    })
-
-    onMounted(async () => {
-      await getModelList()
+    }, {
+      immediate: true,
+      deep: true,
     })
 
     return {

@@ -20,12 +20,6 @@ export function mergeModelList(arr1: PlatformConfig[], arr2: PlatformConfig[]): 
 
     if (arr1Item) {
       const mergedItem: PlatformConfig = { ...arr1Item, ...arr2Item }
-
-      // Merge defaultSelectModel by combining and removing duplicates
-      // if (arr1Item.defaultSelectModel && arr2Item.defaultSelectModel) {
-      //   mergedItem.defaultSelectModel = Array.from(new Set([...arr1Item.defaultSelectModel, ...arr2Item.defaultSelectModel]))
-      // }
-
       // Merge modelList by updating or adding models based on the label
       const modelMap = new Map(arr1Item.modelList.map(model => [model.label, model]))
 
@@ -64,14 +58,11 @@ export function getDefaultModels(): ModelState {
 
 export function getLocalState(): ModelState {
   const defaultModels = getDefaultModels()
-  console.log('getLocalState-defaultModels', defaultModels)
   const localModel: ModelState = ss.get(LOCAL_NAME) ?? {}
-  console.log('getLocalState-localModel', localModel)
   if (isEmpty(localModel)) {
     setLocalState(defaultModels)
   }
   const models = mergeModelList(defaultModels.models, localModel.models)
-  console.log('getLocalState-models', models)
   return { models }
 }
 
