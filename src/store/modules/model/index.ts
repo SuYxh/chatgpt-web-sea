@@ -13,10 +13,6 @@ export const useModelStore = defineStore('model-store', {
         this.recordState()
       }
     },
-    checkModel(item: PlatformConfig) {
-      this.saveCurrentModel(item)
-      console.log('checkModel')
-    },
     modelChange(group: string, params: string[]) {
       console.log('onModelChange', params)
       const groupItem = this.models.find(item => item.group === group)

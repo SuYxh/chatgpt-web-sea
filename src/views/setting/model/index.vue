@@ -1,12 +1,12 @@
 <script lang='ts'>
-import { NButton, NCollapse, NCollapseItem, NInput, NSelect, NSwitch } from 'naive-ui'
+import { NCollapse, NCollapseItem, NInput, NSelect, NSwitch } from 'naive-ui'
 import { computed, defineComponent } from 'vue'
+import ModelChecker from './components/ModelChecker.vue'
 import { useModelStore } from '@/store'
-import type { PlatformConfig } from '@/store/modules/model/type'
 
 export default defineComponent({
   components: {
-    NButton, NCollapse, NCollapseItem, NInput, NSelect, NSwitch,
+    NCollapse, NCollapseItem, NInput, NSelect, NSwitch, ModelChecker,
   },
   setup() {
     const modelStore = useModelStore()
@@ -23,13 +23,8 @@ export default defineComponent({
       modelStore.modelChange(group, val)
     }
 
-    const checkModel = (item: PlatformConfig) => {
-      console.log('checkModel', item)
-      modelStore.checkModel(item)
-    }
-
     return {
-      modelList, checkModel, handleSelectChange,
+      modelList, handleSelectChange,
     }
   },
 })
@@ -115,9 +110,8 @@ export default defineComponent({
                 </div>
               </div>
               <div class="config-right">
-                <NButton @click="checkModel(item)">
-                  检查
-                </NButton>
+                <!-- 检查 -->
+                <ModelChecker :model-info="item" />
               </div>
             </div>
           </div>
