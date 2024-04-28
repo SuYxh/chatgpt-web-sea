@@ -24,7 +24,7 @@ function setupPlugins(env: ImportMetaEnv): PluginOption[] {
 export default defineConfig((env) => {
   const viteEnv = loadEnv(env.mode, process.cwd()) as unknown as ImportMetaEnv
 
-  return {
+  const config = {
     resolve: {
       alias: {
         '@': path.resolve(process.cwd(), 'src'),
@@ -39,13 +39,10 @@ export default defineConfig((env) => {
         '/api': {
           target: viteEnv.VITE_APP_API_BASE_URL,
           changeOrigin: true, // 允许跨域
-          rewrite: path => path.replace('/api/', '/'),
+          rewrite: (path: string) => path.replace('/api/', '/'),
         },
       },
     },
-    // esbuild: {
-    //   drop: ['console', 'debugger'],
-    // },
     build: {
       reportCompressedSize: false,
       sourcemap: false,
@@ -54,4 +51,14 @@ export default defineConfig((env) => {
       },
     },
   }
+
+  // 只在生产环境下添加esbuild配置
+  if (env.mode === 'production') {
+    // @ts-expect-error
+    config.esbuild = {
+      drop: ['console', 'debugger'],
+    }
+  }
+
+  return config
 })
