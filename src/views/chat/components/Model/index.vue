@@ -1,6 +1,8 @@
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
-import { NSelect, NSpace } from 'naive-ui'
+import type { VNode } from 'vue'
+import { defineComponent, h, ref, watch } from 'vue'
+import type { SelectOption } from 'naive-ui'
+import { NSelect, NSpace, NTooltip } from 'naive-ui'
 import { useRoute } from 'vue-router'
 import { useChatStore, useModelStore } from '@/store'
 import type { Model, PlatformConfig } from '@/store/modules/model/type'
@@ -22,6 +24,16 @@ export default defineComponent({
     const selectedValue = ref('')
     const options = ref<Model[]>([])
 
+    const renderOption = ({ node, option }: { node: VNode; option: SelectOption }) => {
+      if (option.desc) {
+        return h(NTooltip, null, {
+          trigger: () => node,
+          default: () => `${option.desc}`,
+        })
+      }
+      return node
+    }
+
     const handleOptions = (modelList: PlatformConfig[]) => {
       let models: Model[] = []
       const enableModels = modelList.filter(v => v.enable)
@@ -31,6 +43,7 @@ export default defineComponent({
           models = models.concat(selectModel)
         }
       })
+
       options.value = models
     }
 
@@ -70,6 +83,7 @@ export default defineComponent({
       options,
       selectedValue,
       handleChange,
+      renderOption,
     }
   },
 })
@@ -78,7 +92,7 @@ export default defineComponent({
 <template>
   <div class="flex justify-center">
     <NSpace vertical>
-      <NSelect v-model:value="selectedValue" :options="options" style="min-width: 22vw;" @update:value="handleChange" />
+      <NSelect v-model:value="selectedValue" :options="options" style="min-width: 22vw;" :render-option="renderOption" @update:value="handleChange" />
     </NSpace>
   </div>
 </template>

@@ -1,9 +1,12 @@
 import type { PlatformConfig } from './type'
 export const modelListConfig: PlatformConfig[] = [
   {
+    // 模型对应的平台
     platform: 'OpenAI',
+    // 模型分组
     group: 'openai',
     logo: 'https://qn.huat.xyz/mac/202404271224342.png',
+    // 模型配置面板中按钮的状态
     enable: 1,
     apikey: '',
     apiKeyTitle: 'OpenAI API Key',
@@ -133,14 +136,14 @@ export const modelListConfig: PlatformConfig[] = [
     modelListTip: '选择在会话中展示的模型，选择的模型会在模型列表中展示',
     modelList: [
       {
-        label: 'kimi',
+        label: 'Kimi',
         value: 'kimi',
         selected: 1,
         group: 'moonshot',
         desc: '',
       },
       {
-        label: 'kimi-silent_search',
+        label: 'Kimi-no-search',
         value: 'kimi-silent_search',
         selected: 0,
         group: 'moonshot',
@@ -151,21 +154,21 @@ export const modelListConfig: PlatformConfig[] = [
         value: 'moonshot-v1-8k',
         selected: 0,
         group: 'moonshot',
-        desc: '',
+        desc: '月之暗面',
       },
       {
         label: 'moonshot-v1-32k',
         value: 'moonshot-v1-32k',
         selected: 0,
         group: 'moonshot',
-        desc: '',
+        desc: '月之暗面',
       },
       {
         label: 'moonshot-v1-128k',
         value: 'moonshot-v1-128k',
         selected: 0,
         group: 'moonshot',
-        desc: '',
+        desc: '月之暗面',
       },
     ],
   },
@@ -186,14 +189,14 @@ export const modelListConfig: PlatformConfig[] = [
     modelListTip: '选择在会话中展示的模型，选择的模型会在模型列表中展示',
     modelList: [
       {
-        label: 'glm',
+        label: '智谱AI',
         value: 'glm',
         selected: 1,
         group: 'glm',
         desc: '',
       },
       {
-        label: 'glm-silent_search',
+        label: 'glm-no-search',
         value: 'glm-silent_search',
         selected: 0,
         group: 'glm',
@@ -204,21 +207,21 @@ export const modelListConfig: PlatformConfig[] = [
         value: 'glm-4',
         selected: 0,
         group: 'glm',
-        desc: '',
+        desc: '智谱AI',
       },
       {
         label: 'gml-4v',
         value: 'gml-4v',
         selected: 0,
         group: 'glm',
-        desc: '',
+        desc: '智谱AI',
       },
       {
         label: 'glm-3-turbo',
         value: 'glm-3-turbo',
         selected: 0,
         group: 'glm',
-        desc: '',
+        desc: '智谱AI',
       },
     ],
   },
@@ -239,14 +242,14 @@ export const modelListConfig: PlatformConfig[] = [
     modelListTip: '选择在会话中展示的模型，选择的模型会在模型列表中展示',
     modelList: [
       {
-        label: 'step',
+        label: '阶跃星辰',
         value: 'step',
         selected: 1,
         group: 'step',
         desc: '',
       },
       {
-        label: 'step-silent_search',
+        label: 'step-no-search',
         value: 'step-silent_search',
         selected: 0,
         group: 'step',
@@ -257,21 +260,21 @@ export const modelListConfig: PlatformConfig[] = [
         value: 'step-1-32k',
         selected: 0,
         group: 'step',
-        desc: '',
+        desc: '阶跃星辰',
       },
       {
         label: 'step-1v-32k',
         value: 'step-1v-32k',
         selected: 0,
         group: 'step',
-        desc: '',
+        desc: '阶跃星辰',
       },
       {
         label: 'step-1-200k',
         value: 'step-1-200k',
         selected: 0,
         group: 'step',
-        desc: '',
+        desc: '阶跃星辰',
       },
     ],
   },
@@ -292,14 +295,14 @@ export const modelListConfig: PlatformConfig[] = [
     modelListTip: '选择在会话中展示的模型，选择的模型会在模型列表中展示',
     modelList: [
       {
-        label: 'qwen',
+        label: '通义千问',
         value: 'qwen',
         selected: 1,
         group: 'qwen',
         desc: '',
       },
       {
-        label: 'qwen-silent_search',
+        label: 'qwen-no-search',
         value: 'qwen-silent_search',
         selected: 0,
         group: 'qwen',
@@ -377,7 +380,7 @@ export const modelListConfig: PlatformConfig[] = [
     modelList: [
       {
         // 全网model名称支持 -> 简洁：concise / 深入：detail / 研究：research
-        label: 'concise',
+        label: '秘塔AI-concise',
         value: 'concise',
         selected: 1,
         group: 'metaso',
@@ -385,7 +388,7 @@ export const modelListConfig: PlatformConfig[] = [
       },
       {
         // 全网model名称支持 -> 简洁：concise / 深入：detail / 研究：research
-        label: 'detail',
+        label: '秘塔AI-detail',
         value: 'detail',
         selected: 1,
         group: 'metaso',
@@ -393,7 +396,7 @@ export const modelListConfig: PlatformConfig[] = [
       },
       {
         // 全网model名称支持 -> 简洁：concise / 深入：detail / 研究：research
-        label: 'research',
+        label: '秘塔AI-research',
         value: 'research',
         selected: 1,
         group: 'metaso',
@@ -402,7 +405,7 @@ export const modelListConfig: PlatformConfig[] = [
 
       {
         // 学术model名称支持 -> 学术-简洁：concise-scholar / 学术-深入：detail-scholar / 学术-研究：research-scholar
-        label: 'concise-scholar',
+        label: '秘塔AI-concise-scholar',
         value: 'concise-scholar',
         selected: 1,
         group: 'metaso',
@@ -410,7 +413,7 @@ export const modelListConfig: PlatformConfig[] = [
       },
       {
         // 学术model名称支持 -> 学术-简洁：concise-scholar / 学术-深入：detail-scholar / 学术-研究：research-scholar
-        label: 'detail-scholar',
+        label: '秘塔AI-detail-scholar',
         value: 'detail-scholar',
         selected: 1,
         group: 'metaso',
@@ -418,7 +421,7 @@ export const modelListConfig: PlatformConfig[] = [
       },
       {
         // 学术model名称支持 -> 学术-简洁：concise-scholar / 学术-深入：detail-scholar / 学术-研究：research-scholar
-        label: 'research-scholar',
+        label: '秘塔AI-research-scholar',
         value: 'research-scholar',
         selected: 1,
         group: 'metaso',
@@ -443,18 +446,18 @@ export const modelListConfig: PlatformConfig[] = [
     modelListTip: '选择在会话中展示的模型，选择的模型会在模型列表中展示',
     modelList: [
       {
-        label: 'spark',
+        label: '讯飞星火',
         value: 'spark',
         selected: 1,
         group: 'spark',
         desc: '',
       },
       {
-        label: 'spark-silent_search',
+        label: 'spark-no-search',
         value: 'spark-silent_search',
         selected: 0,
         group: 'spark',
-        desc: '不输出检索过程',
+        desc: '讯飞星火: 不输出检索过程',
       },
     ],
   },
@@ -475,18 +478,18 @@ export const modelListConfig: PlatformConfig[] = [
     modelListTip: '选择在会话中展示的模型，选择的模型会在模型列表中展示',
     modelList: [
       {
-        label: 'emohaa',
+        label: '聆心智能',
         value: 'emohaa',
         selected: 1,
         group: 'emohaa',
         desc: '',
       },
       {
-        label: 'emohaa-silent_search',
+        label: 'emohaa-no-search',
         value: 'emohaa-silent_search',
         selected: 0,
         group: 'emohaa',
-        desc: '不输出检索过程',
+        desc: '聆心智能: 不输出检索过程',
       },
     ],
   },
