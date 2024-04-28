@@ -2,6 +2,7 @@
 import { NLayout, NLayoutSider, NMenu, NScrollbar, NSpace } from 'naive-ui'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, h, ref, watch } from 'vue'
+import GoChat from './components/GoChat.vue'
 import { SvgIcon } from '@/components/common'
 
 function renderIcon(icon: string) {
@@ -17,6 +18,11 @@ const menuOptions = [
   {
     label: '模型设置',
     key: '/setting/model',
+    icon: renderIcon('ri:settings-4-line'),
+  },
+  {
+    label: '提示词',
+    key: '/setting/about',
     icon: renderIcon('ri:settings-4-line'),
   },
   {
@@ -36,6 +42,8 @@ watch(() => route.path, (newVal) => {
 }, { immediate: true })
 
 const title = computed(() => menuOptions.find(v => v.key === activeKey.value)?.label)
+
+const isModelSetting = computed(() => activeKey.value === '/setting/model')
 
 const handleMenuSelect = (key: string) => {
   console.log('key', key)
@@ -63,7 +71,13 @@ const handleMenuSelect = (key: string) => {
         <NLayout>
           <NScrollbar style="max-height: 100vh">
             <div class="layout-main-top">
-              <h1>{{ title }}</h1>
+              <h1 class="layout-main-top-title">
+                {{ title }}
+              </h1>
+
+              <div v-if="isModelSetting" class="right-tip">
+                <GoChat />
+              </div>
             </div>
             <div class="layout-main">
               <router-view />
@@ -90,16 +104,25 @@ const handleMenuSelect = (key: string) => {
 
 .layout-main-top {
   position: fixed;
+  height: 60px;
+  width: 100%;
+  background-color: #fff;
+  z-index: 99;
+  border-bottom: 1px solid #eee;
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  height: 60px;
-  width: 100%;
   padding-left: 12px;
-  background-color: #fff;
-  z-index: 99;
+}
+
+.layout-main-top-title {
   font-size: 20px;
   font-weight: bold;
-  border-bottom: 1px solid #eee;
+}
+
+.right-tip {
+  position: absolute;
+  left: 64vw;
+  color: #111;
 }
 </style>
