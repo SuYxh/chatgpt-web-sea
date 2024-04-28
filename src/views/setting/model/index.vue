@@ -3,6 +3,7 @@ import { NCollapse, NCollapseItem, NInput, NSelect, NSwitch } from 'naive-ui'
 import { computed, defineComponent } from 'vue'
 import ModelChecker from './components/ModelChecker.vue'
 import { useModelStore } from '@/store'
+import type { PlatformConfig } from '@/store/modules/model/type'
 
 export default defineComponent({
   components: {
@@ -12,6 +13,7 @@ export default defineComponent({
     const modelStore = useModelStore()
     const modelList = computed(() => {
       const models = modelStore.models.map((v) => {
+        v.enable = !!v.enable
         v.defaultSelectModel = v.modelList.filter(i => i.selected === 1).map(m => m.value)
         return v
       })
@@ -23,8 +25,12 @@ export default defineComponent({
       modelStore.modelChange(group, val)
     }
 
+    const handleChange = (item: PlatformConfig) => {
+      modelStore.saveCurrentModel(item)
+    }
+
     return {
-      modelList, handleSelectChange,
+      modelList, handleSelectChange, handleChange,
     }
   },
 })
@@ -44,7 +50,7 @@ export default defineComponent({
 
           <template #header-extra>
             <div>
-              <NSwitch :default-value="!!item.enable" />
+              <NSwitch v-model:value="item.enable" @click.stop="handleChange(item)" />
             </div>
           </template>
 

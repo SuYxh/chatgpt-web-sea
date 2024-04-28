@@ -9,7 +9,7 @@ export interface PlatformConfig {
   platform: string
   group: string
   logo: string
-  enable: number // Assuming 0 or 1 as possible values, similar to a boolean.
+  enable: number | boolean // Assuming 0 or 1 as possible values, similar to a boolean.
   apikey: string
   apiKeyTitle: string // Optional property, as it might not be present in all configurations.
   apiKeyTip: string // Optional property
