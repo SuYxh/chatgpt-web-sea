@@ -122,6 +122,25 @@ function handleImportButtonClick(): void {
   if (fileInput)
     fileInput.click()
 }
+
+function handleResetSystem() {
+  window.$dialog!.warning({
+    title: '温馨提示',
+    content: '这个操作会清空本地存储的所有内容，是否要继续?',
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: () => {
+      window.localStorage.clear()
+      window.$message!.success('重置成功')
+      setTimeout(() => {
+        location.reload()
+      }, 1000)
+    },
+    onNegativeClick: () => {
+      window.$message!.success('取消成功')
+    },
+  })
+}
 </script>
 
 <template>
@@ -219,6 +238,13 @@ function handleImportButtonClick(): void {
       <div class="flex items-center space-x-4">
         <span class="flex-shrink-0 w-[100px]">{{ $t('setting.resetUserInfo') }}</span>
         <NButton size="small" @click="handleReset">
+          {{ $t('common.reset') }}
+        </NButton>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <span class="flex-shrink-0 w-[100px]">重置系统</span>
+        <NButton size="small" @click="handleResetSystem">
           {{ $t('common.reset') }}
         </NButton>
       </div>
