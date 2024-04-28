@@ -18,17 +18,17 @@ const menuOptions = [
   {
     label: '模型设置',
     key: '/setting/model',
-    icon: renderIcon('ri:settings-4-line'),
+    icon: renderIcon('carbon:ai'),
   },
   {
     label: '提示词',
-    key: '/setting/about',
-    icon: renderIcon('ri:settings-4-line'),
+    key: '/setting/prompt',
+    icon: renderIcon('streamline:ai-prompt-spark'),
   },
   {
     label: '关于',
     key: '/setting/about',
-    icon: renderIcon('ri:settings-4-line'),
+    icon: renderIcon('mdi:about-circle-outline'),
   },
 ]
 

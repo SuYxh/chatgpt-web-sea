@@ -36,6 +36,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/setting/model/index.vue'),
       },
       {
+        path: '/setting/prompt',
+        name: 'settingPrompt',
+        component: () => import('@/views/setting/prompt/index.vue'),
+      },
+      {
         path: '/setting/about',
         name: 'settingAbout',
         component: () => import('@/views/setting/about/index.vue'),

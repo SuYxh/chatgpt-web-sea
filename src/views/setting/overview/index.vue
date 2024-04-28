@@ -1,10 +1,9 @@
 <script setup lang='ts'>
-import { NSpace } from 'naive-ui'
 import General from '@/components/common/Setting/General.vue'
 </script>
 
 <template>
-  <NSpace>
+  <div class="flex justify-center px-6 py-6">
     <General />
-  </NSpace>
+  </div>
 </template>
