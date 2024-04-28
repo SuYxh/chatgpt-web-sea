@@ -19,7 +19,7 @@ export default defineComponent({
     const { uuid } = route.params as { uuid: string }
 
     const isInit = ref(true)
-    const selectedValue = ref('gpt-3.5-turbo')
+    const selectedValue = ref('')
     const options = ref<Model[]>([])
 
     const handleOptions = (modelList: PlatformConfig[]) => {
@@ -51,7 +51,9 @@ export default defineComponent({
     }
 
     const setDefaultModel = () => {
-      handleChange(options.value[0].value)
+      const firstModel = options.value[0].value
+      selectedValue.value = firstModel
+      handleChange(firstModel)
     }
 
     watch(options, (newVal) => {

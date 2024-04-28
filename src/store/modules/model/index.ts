@@ -34,6 +34,7 @@ export const useModelStore = defineStore('model-store', {
           value: v,
           selected: 1,
           group,
+          desc: '',
         }))
         console.log('newModels', newModels)
 

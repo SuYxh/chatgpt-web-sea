@@ -79,7 +79,21 @@ export default defineComponent({
                 </div>
               </div>
               <div class="config-right">
-                <NInput v-model:value="item.baseUrl" class="input-width" placeholder="请输入您的 OpenAI Key" />
+                <NInput v-model:value="item.baseUrl" class="input-width" :placeholder="item.baseUrlTip" />
+              </div>
+            </div>
+
+            <div class="config-item">
+              <div class="config-left">
+                <div class="title">
+                  聊天接口地址
+                </div>
+                <div class="sub-title">
+                  一般默认都是 /v1/chat/completions
+                </div>
+              </div>
+              <div class="config-right">
+                <NInput v-model:value="item.chatAPI" class="input-width" placeholder="请输入聊天接口" />
               </div>
             </div>
 
@@ -166,7 +180,7 @@ export default defineComponent({
 .n-collapse .n-collapse-item .n-collapse-item__header {
   padding-left: 24px;
   padding-right: 24px;
-  height: 60px;
+  height: 80px;
   background-color: rgb(245, 245, 245);
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;

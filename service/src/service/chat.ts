@@ -13,8 +13,9 @@ export async function chatService(req, res) {
     const authHeader = req.headers.authorization || req.headers.Authorization
     const contentType = req.headers['content-type']
     const baseUrl = req.body.baseUrl
+    const chatAPI = req.body.chatAPI ?? defaultChatAPI
     delete req.body.baseUrl
-    const url = `${baseUrl}${defaultChatAPI}`
+    const url = `${baseUrl}${chatAPI}`
 
     const payload = {
       headers: {

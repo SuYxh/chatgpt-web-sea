@@ -90,6 +90,7 @@ function buildUrlAndHeaders() {
 
   return {
     baseUrl: modelPlatform?.baseUrl,
+    chatAPI: modelPlatform?.chatAPI,
     headers,
   }
 }
@@ -233,10 +234,11 @@ async function onConversation() {
         return
       }
 
-      const { baseUrl, headers } = buildUrlAndHeaders()
+      const { baseUrl, chatAPI, headers } = buildUrlAndHeaders()
 
       const body: any = {
         baseUrl,
+        chatAPI,
         model: curModel.value.value || selectModel.value.value,
         messages,
         stream: true,
@@ -418,10 +420,11 @@ async function onRegenerate(index: number) {
 
     const fetchChatAPIOnce = async () => {
       console.log('当前选择的模型', curModel.value)
-      const { baseUrl, headers } = buildUrlAndHeaders()
+      const { baseUrl, chatAPI, headers } = buildUrlAndHeaders()
 
       const body: any = {
         baseUrl,
+        chatAPI,
         model: curModel.value.value,
         // parent_message_id: parentMessageId,
         // TODO: 还需要处理没有开启上下文的情况

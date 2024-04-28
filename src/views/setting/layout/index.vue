@@ -104,15 +104,15 @@ const handleMenuSelect = (key: string) => {
 
 .layout-main-top {
   position: fixed;
-  height: 60px;
-  width: 100%;
-  background-color: #fff;
   z-index: 99;
-  border-bottom: 1px solid #eee;
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
-  padding-left: 12px;
+  height: 60px;
+  width: calc(100vw - 240px);
+  padding: 0 32px;
+  border-bottom: 1px solid #eee;
+  background-color: #fff;
 }
 
 .layout-main-top-title {
@@ -121,8 +121,6 @@ const handleMenuSelect = (key: string) => {
 }
 
 .right-tip {
-  position: absolute;
-  left: 64vw;
   color: #111;
 }
 </style>
