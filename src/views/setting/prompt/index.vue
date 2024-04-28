@@ -15,24 +15,7 @@ interface DataProps {
   value: string
 }
 
-interface Props {
-  visible: boolean
-}
-
-interface Emit {
-  (e: 'update:visible', visible: boolean): void
-}
-
-const props = defineProps<Props>()
-
-const emit = defineEmits<Emit>()
-
 const message = useMessage()
-
-const show = computed({
-  get: () => props.visible,
-  set: (visible: boolean) => emit('update:visible', visible),
-})
 
 const showModal = ref(false)
 

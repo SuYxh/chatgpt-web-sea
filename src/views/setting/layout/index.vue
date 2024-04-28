@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NLayout, NLayoutSider, NMenu, NScrollbar, NSpace } from 'naive-ui'
+import { NLayout, NLayoutSider, NMenu, NScrollbar, NSpace, NTooltip } from 'naive-ui'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, h, ref, watch } from 'vue'
 import GoChat from './components/GoChat.vue'
@@ -46,8 +46,11 @@ const title = computed(() => menuOptions.find(v => v.key === activeKey.value)?.l
 const isModelSetting = computed(() => activeKey.value === '/setting/model')
 
 const handleMenuSelect = (key: string) => {
-  console.log('key', key)
   router.push(key)
+}
+
+const goHome = () => {
+  router.replace('/')
 }
 </script>
 
@@ -67,6 +70,14 @@ const handleMenuSelect = (key: string) => {
             :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions"
             @update:value="handleMenuSelect"
           />
+          <NTooltip trigger="hover">
+            <template #trigger>
+              <div class="go-home" @click="goHome">
+                <SvgIcon style="font-size: 36px;" icon="iconamoon:home-bold" />
+              </div>
+            </template>
+            回到首页
+          </NTooltip>
         </NLayoutSider>
         <NLayout>
           <NScrollbar style="max-height: 100vh">
@@ -92,7 +103,7 @@ const handleMenuSelect = (key: string) => {
 <style scoped>
 .layout-sider-top {
   box-sizing: border-box;
-  padding: 12px;
+  padding: 6px 32px;
   font-size: 26px;
   font-weight: bold;
 }
@@ -122,5 +133,13 @@ const handleMenuSelect = (key: string) => {
 
 .right-tip {
   color: #111;
+}
+
+.go-home {
+  position: relative;
+  z-index: 99;
+  left: 100px;
+  top: 60vh;
+  cursor: pointer;
 }
 </style>
