@@ -1,5 +1,6 @@
 import fs from 'fs-extra'
 import qiniu from 'qiniu'
+import iconv from 'iconv-lite'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -20,8 +21,10 @@ class QiniuStorageService {
   }
 
   public async uploadFile(req) {
+    const correctName = iconv.decode(Buffer.from(req.file.originalname, 'binary'), 'utf-8')
+
     const localFile = req.file.path
-    const key = `aigc/${Date.now()}_${req.file.filename}`
+    const key = `aigc/${Date.now()}_${correctName}`
 
     try {
       const url = await this.putFile(localFile, key)
