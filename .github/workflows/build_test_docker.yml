@@ -1,0 +1,41 @@
+name: build_test_docker
+
+on:
+  push:
+    branches-ignore: [main] # 不包括main分支
+
+jobs:
+  build_docker:
+    name: Build Test docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Prepare
+        run: echo "BUILD_DATE=$(date +%Y%m%d-%H%M)" >> $GITHUB_ENV
+
+      - run: |
+          echo "本次构建的版本为：${GITHUB_REF_NAME} (但是这个变量目前上下文中无法获取到)"
+          echo 本次构建的版本为：${{ github.ref_name }}
+          env
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/chatgpt-web-sea:test
