@@ -27,6 +27,24 @@ import { findLast } from '@/utils/functions/index'
 let controller = new AbortController()
 let parentMessageId = ''
 let conversationId = ''
+const supportConversationIdModels = [
+  // {
+  //   group: 'openai',
+  //   field: 'parent_message_id',
+  //   initialVal: 'none',
+  // },
+  {
+    group: 'moonshot',
+    field: 'conversation_id',
+    initialVal: 'none',
+  },
+  {
+    group: 'glm',
+    field: 'conversation_id',
+    initialVal: 'none',
+  },
+]
+//
 
 // const openLongReply = import.meta.env.VITE_GLOB_OPEN_LONG_REPLY === 'true'
 
@@ -171,6 +189,32 @@ function handleMessages(files: any[]) {
   return messages
 }
 
+function handleBody({ baseUrl, chatAPI, messages, conversationId }: any) {
+  const curSelectModel = curModel.value || selectModel.value
+
+  const body: any = {
+    model: curSelectModel.value,
+    messages,
+    stream: true,
+    baseUrl,
+    chatAPI,
+  }
+
+  const support = supportConversationIdModels.filter(item => item.group === curSelectModel.group)
+
+  if (support?.length) {
+    const current = support[0]
+    body[current.field] = conversationId || current.initialVal
+    body.messages = [messages[messages?.length - 1]]
+  }
+
+  if (!isGPT.value) {
+    body.use_search = usingInternet.value
+  }
+
+  return body
+}
+
 async function onConversation() {
   const message = prompt.value
   const files = [...fileList.value]
@@ -236,17 +280,7 @@ async function onConversation() {
 
       const { baseUrl, chatAPI, headers } = buildUrlAndHeaders()
 
-      const body: any = {
-        baseUrl,
-        chatAPI,
-        model: curModel.value.value || selectModel.value.value,
-        messages,
-        stream: true,
-      }
-
-      if (!isGPT.value) {
-        body.use_search = usingInternet.value
-      }
+      const body = handleBody({ baseUrl, chatAPI, messages, conversationId })
 
       const response = await fetchWithAuth('/chat-process', {
         headers,
@@ -422,20 +456,7 @@ async function onRegenerate(index: number) {
       console.log('当前选择的模型', curModel.value)
       const { baseUrl, chatAPI, headers } = buildUrlAndHeaders()
 
-      const body: any = {
-        baseUrl,
-        chatAPI,
-        model: curModel.value.value,
-        // parent_message_id: parentMessageId,
-        // TODO: 还需要处理没有开启上下文的情况
-        messages,
-        // use_search: usingInternet.value,
-        stream: true,
-      }
-
-      if (!isGPT.value) {
-        body.use_search = usingInternet.value
-      }
+      const body = handleBody({ baseUrl, chatAPI, messages, conversationId: options.conversationId })
 
       // fetchWithAuth
       const response = await fetchWithAuth('/chat-process', {
