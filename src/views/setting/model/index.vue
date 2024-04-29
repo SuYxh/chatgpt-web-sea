@@ -1,6 +1,8 @@
 <script lang='ts'>
-import { NCollapse, NCollapseItem, NInput, NSelect, NSwitch } from 'naive-ui'
-import { computed, defineComponent } from 'vue'
+import type { SelectOption } from 'naive-ui'
+import { NCollapse, NCollapseItem, NInput, NSelect, NSwitch, NTooltip } from 'naive-ui'
+import type { VNode } from 'vue'
+import { computed, defineComponent, h } from 'vue'
 import ModelChecker from './components/ModelChecker.vue'
 import { useModelStore } from '@/store'
 import type { PlatformConfig } from '@/store/modules/model/type'
@@ -20,6 +22,16 @@ export default defineComponent({
       return models
     })
 
+    const renderOption = ({ node, option }: { node: VNode; option: SelectOption }) => {
+      if (option.desc) {
+        return h(NTooltip, null, {
+          trigger: () => node,
+          default: () => `${option.desc}`,
+        })
+      }
+      return node
+    }
+
     const handleSelectChange = (group: string, val: any) => {
       console.log('handleSelectChange', group, val)
       modelStore.modelChange(group, val)
@@ -30,7 +42,7 @@ export default defineComponent({
     }
 
     return {
-      modelList, handleSelectChange, handleChange,
+      modelList, handleSelectChange, handleChange, renderOption,
     }
   },
 })
@@ -115,6 +127,7 @@ export default defineComponent({
                   tag
                   :options="item.modelList"
                   placeholder="请选择模型"
+                  :render-option="renderOption"
                   @update:value="(val) => handleSelectChange(item.group, val)"
                 />
               </div>
