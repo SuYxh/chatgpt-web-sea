@@ -101,6 +101,8 @@
 
 - [x] 增加模型配置页面，支持自由配置模型
 
+- [x] `kimi`、`glm`支持`conversation_id`
+
   
 
 ## TODO
