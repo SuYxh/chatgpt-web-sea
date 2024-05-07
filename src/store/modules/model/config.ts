@@ -495,6 +495,31 @@ export const modelListConfig: PlatformConfig[] = [
   },
 
   {
+    platform: '海螺 AI',
+    group: 'minimaxi',
+    logo: 'https://qn.huat.xyz/mac/202405072203103.png',
+    enable: 1,
+    apikey: '',
+    apiKeyTitle: 'API Key',
+    apiKeyTip: '填入来自 minimaxi 的 API Key',
+    baseUrl: '',
+    chatAPI: '/v1/chat/completions',
+    baseUrlTitle: '接口代理地址',
+    baseUrlTip: '除默认地址外，必须包含 http(s)://',
+    modelListTitle: '模型列表',
+    modelListTip: '选择在会话中展示的模型，选择的模型会在模型列表中展示',
+    modelList: [
+      {
+        label: '海螺 AI',
+        value: 'hailuo',
+        selected: 1,
+        group: 'minimaxi',
+        desc: '',
+      },
+    ],
+  },
+
+  {
     platform: 'Gemini',
     group: 'gemini',
     logo: 'https://qn.huat.xyz/mac/202404271453196.png',
