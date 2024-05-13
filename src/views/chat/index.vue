@@ -27,23 +27,23 @@ import { findLast } from '@/utils/functions/index'
 let controller = new AbortController()
 let parentMessageId = ''
 let conversationId = ''
-const supportConversationIdModels = [
-  // {
-  //   group: 'openai',
-  //   field: 'parent_message_id',
-  //   initialVal: 'none',
-  // },
-  {
-    group: 'moonshot',
-    field: 'conversation_id',
-    initialVal: 'none',
-  },
-  {
-    group: 'glm',
-    field: 'conversation_id',
-    initialVal: 'none',
-  },
-]
+// const supportConversationIdModels = [
+//   // {
+//   //   group: 'openai',
+//   //   field: 'parent_message_id',
+//   //   initialVal: 'none',
+//   // },
+//   {
+//     group: 'moonshot',
+//     field: 'conversation_id',
+//     initialVal: 'none',
+//   },
+//   {
+//     group: 'glm',
+//     field: 'conversation_id',
+//     initialVal: 'none',
+//   },
+// ]
 //
 
 // const openLongReply = import.meta.env.VITE_GLOB_OPEN_LONG_REPLY === 'true'
