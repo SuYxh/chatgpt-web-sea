@@ -200,13 +200,14 @@ function handleBody({ baseUrl, chatAPI, messages, conversationId }: any) {
     chatAPI,
   }
 
-  const support = supportConversationIdModels.filter(item => item.group === curSelectModel.group)
+  // 取消使用 conversationId
+  // const support = supportConversationIdModels.filter(item => item.group === curSelectModel.group)
 
-  if (support?.length) {
-    const current = support[0]
-    body[current.field] = conversationId || current.initialVal
-    body.messages = [messages[messages?.length - 1]]
-  }
+  // if (support?.length) {
+  //   const current = support[0]
+  //   body[current.field] = conversationId || current.initialVal
+  //   body.messages = [messages[messages?.length - 1]]
+  // }
 
   if (!isGPT.value) {
     body.use_search = usingInternet.value
