@@ -81,7 +81,6 @@ export const modelListConfig: PlatformConfig[] = [
         group: 'openai',
         desc: '',
       },
-
       {
         label: 'gpt-4',
         value: 'gpt-4',
@@ -113,6 +112,13 @@ export const modelListConfig: PlatformConfig[] = [
       {
         label: 'gpt-4-turbo',
         value: 'gpt-4-turbo',
+        selected: 1,
+        group: 'openai',
+        desc: '',
+      },
+      {
+        label: 'gpt-4o',
+        value: 'gpt-4o',
         selected: 1,
         group: 'openai',
         desc: '',
